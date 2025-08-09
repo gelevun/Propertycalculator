@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kar - Zarar Deveranı</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -139,6 +138,11 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border: 1px solid #e5e7eb;
         }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
         .results-table th {
             background: linear-gradient(45deg, #1f2937, #374151);
@@ -192,29 +196,7 @@
             font-weight: 500;
         }
 
-        .export-section {
-            margin-top: 20px;
-            text-align: center;
-        }
 
-        .export-btn {
-            background: linear-gradient(45deg, #059669, #10b981);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            margin: 0 8px 8px 0;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .export-btn:hover {
-            background: linear-gradient(45deg, #047857, #059669);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.25);
-        }
 
         .error {
             color: #dc2626;
@@ -255,20 +237,33 @@
                 padding: 16px;
                 margin-bottom: 16px;
             }
+            .table-container {
+                margin: 0 -16px;
+                padding: 0 16px;
+            }
             .results-table {
-                font-size: 12px;
+                font-size: 11px;
+                min-width: 600px;
             }
             .results-table th,
             .results-table td {
                 padding: 8px 4px;
+                white-space: nowrap;
+            }
+            .results-table th:first-child,
+            .results-table td:first-child {
+                position: sticky;
+                left: 0;
+                background: white;
+                z-index: 1;
+                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            }
+            .results-table th:first-child {
+                background: linear-gradient(45deg, #1f2937, #374151);
+                color: white;
             }
             .chart-container {
                 padding: 16px;
-            }
-            .export-btn {
-                display: block;
-                width: 100%;
-                margin: 8px 0;
             }
         }
         
@@ -277,11 +272,12 @@
                 font-size: 1.5em;
             }
             .results-table {
-                font-size: 11px;
+                font-size: 10px;
+                min-width: 550px;
             }
             .results-table th,
             .results-table td {
-                padding: 6px 2px;
+                padding: 6px 3px;
             }
         }
     </style>
@@ -327,19 +323,21 @@
             <div id="results" class="results">
                 <div class="form-section">
                     <h2>📊 Analiz Sonuçları</h2>
-                    <table class="results-table" id="resultsTable">
-                        <thead>
-                            <tr>
-                                <th>Kriter</th>
-                                <th>Alım Değeri</th>
-                                <th>Satış Değeri</th>
-                                <th>Fark</th>
-                                <th>Getiri (%)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="resultsBody">
-                        </tbody>
-                    </table>
+                    <div class="table-container">
+                        <table class="results-table" id="resultsTable">
+                            <thead>
+                                <tr>
+                                    <th>Kriter</th>
+                                    <th>Alım Değeri</th>
+                                    <th>Satış Değeri</th>
+                                    <th>Fark</th>
+                                    <th>Getiri (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="resultsBody">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <div class="charts-section">
@@ -350,25 +348,7 @@
                     </div>
                 </div>
 
-                <div class="export-section">
-                    <button class="export-btn" onclick="exportToPDF()">📄 PDF İndir</button>
-                    <button class="export-btn" onclick="exportToExcel()">📊 Excel İndir</button>
-                </div>
-                
-                <div class="form-section" style="margin-top: 24px;">
-                    <h2>📅 Veri Güncelleme Rehberi</h2>
-                    <div style="color: #4b5563; line-height: 1.6;">
-                        <p><strong>Yeni veriler nasıl eklenir?</strong></p>
-                        <ul style="margin: 12px 0; padding-left: 20px;">
-                            <li>CSV verisi JavaScript kodunun içinde <code>csvData</code> değişkeninde saklanır</li>
-                            <li>Yeni ay verileri için dosyayı edit etmeniz gerekir</li>
-                            <li>Format: <code>YYYY-MM;külçe_altın;usd;euro;tüfe;konut_tr;konut_balıkesir;bist</code></li>
-                            <li>Her ay sonu TCMB, TÜİK ve BIST verilerini takip ederek güncelleyebilirsiniz</li>
-                            <li>Eksik veriler boş bırakılabilir, sistem otomatik olarak 'Veri Yok' gösterir</li>
-                        </ul>
-                        <p style="margin-top: 12px;"><em>Not: Gelecekte otomatik veri çekme özelliği eklenebilir.</em></p>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -1008,77 +988,9 @@
         
 
         
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Türkçe karakter desteği için
-            doc.setLanguage("tr");
-            
-            // Başlık
-            doc.setFontSize(20);
-            doc.text('Kar - Zarar Deveranı Raporu', 20, 30);
-            
-            // Tarih bilgileri
-            const buyDate = document.getElementById('buyDate').value;
-            const sellDate = document.getElementById('sellDate').value;
-            const buyPrice = document.getElementById('buyPrice').value;
-            const sellPrice = document.getElementById('sellPrice').value;
-            
-            doc.setFontSize(12);
-            doc.text(`Alım Tarihi: ${buyDate}`, 20, 50);
-            doc.text(`Satış Tarihi: ${sellDate}`, 20, 60);
-            doc.text(`Alım Fiyatı: ${parseInt(buyPrice).toLocaleString('tr-TR')} TL`, 20, 70);
-            doc.text(`Satış Fiyatı: ${parseInt(sellPrice).toLocaleString('tr-TR')} TL`, 20, 80);
-            
-            // Tablo başlıkları
-            doc.text('Analiz Sonuçları:', 20, 100);
-            
-            let y = 120;
-            const tbody = document.getElementById('resultsBody');
-            const rows = tbody.getElementsByTagName('tr');
-            
-            for (let i = 0; i < rows.length; i++) {
-                const cells = rows[i].getElementsByTagName('td');
-                const criterion = cells[0].textContent;
-                const returnRate = cells[4].textContent;
-                
-                doc.text(`${criterion}: ${returnRate}`, 20, y);
-                y += 10;
-                
-                if (y > 260) {
-                    doc.addPage();
-                    y = 30;
-                }
-            }
-            
-            doc.save('kar-zarar-deverani-raporu.pdf');
-        }
+
         
-        function exportToExcel() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Kriter,Alım Değeri,Satış Değeri,Fark,Getiri (%)\n";
-            
-            const tbody = document.getElementById('resultsBody');
-            const rows = tbody.getElementsByTagName('tr');
-            
-            for (let i = 0; i < rows.length; i++) {
-                const cells = rows[i].getElementsByTagName('td');
-                const rowData = [];
-                for (let j = 0; j < cells.length; j++) {
-                    rowData.push('"' + cells[j].textContent.replace(/"/g, '""') + '"');
-                }
-                csvContent += rowData.join(",") + "\n";
-            }
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "kar-zarar-deverani-raporu.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
+
         
         // Sayfa yüklendiğinde
         window.onload = function() {
