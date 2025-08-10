@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kar - Zarar Deveranı</title>
+    <title>ARSARAZI Yatırım Analizi</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,271 +14,392 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 15px;
             color: #ffffff;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1400px;
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.98);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            color: #1a1a1a;
+            color: #333;
         }
 
         .header {
-            background: linear-gradient(45deg, #1a1a1a, #2c2c2c);
-            color: #ffffff;
-            padding: 24px;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            color: white;
+            padding: 40px 20px;
             text-align: center;
         }
 
         .header h1 {
-            font-size: 2.2em;
-            margin-bottom: 8px;
-            font-weight: 600;
-            letter-spacing: -0.5px;
+            font-size: 3.2em;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
 
         .header p {
-            font-size: 1.2em;
-            opacity: 0.9;
+            font-size: 1.5em;
+            opacity: 0.95;
+            font-weight: 400;
         }
 
         .content {
-            padding: 20px;
+            padding: 30px 20px;
         }
 
         .form-section {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
+            background: white;
+            border-radius: 20px;
+            padding: 35px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(26, 26, 46, 0.15);
+            border: 2px solid rgba(26, 26, 46, 0.1);
         }
 
         .form-section h2 {
-            color: #1a1a1a;
-            margin-bottom: 16px;
-            font-size: 1.5em;
-            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 25px;
+            font-size: 2.4em;
+            font-weight: 700;
+            text-align: center;
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 16px;
+            gap: 25px;
         }
 
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 25px;
         }
 
         .input-group label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: 500;
-            color: #374151;
-            font-size: 14px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            color: #1a1a2e;
+            font-size: 1.2em;
         }
 
         .input-group input, .input-group select {
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: all 0.2s ease;
-            background-color: #ffffff;
-            color: #1f2937;
+            padding: 18px 20px;
+            border: 3px solid #e1e8ed;
+            border-radius: 15px;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            background-color: white;
+            font-weight: 600;
         }
 
         .input-group input:focus, .input-group select:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #1a1a2e;
+            box-shadow: 0 0 0 4px rgba(26, 26, 46, 0.15);
         }
 
         .calculate-btn {
-            background: linear-gradient(45deg, #2563eb, #1d4ed8);
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
             color: white;
             border: none;
-            padding: 14px 32px;
-            font-size: 16px;
-            font-weight: 500;
-            border-radius: 8px;
+            padding: 20px 50px;
+            font-size: 22px;
+            font-weight: 700;
+            border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             width: 100%;
-            margin-top: 16px;
+            margin-top: 25px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
         }
 
         .calculate-btn:hover {
-            background: linear-gradient(45deg, #1d4ed8, #1e40af);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(26, 26, 46, 0.4);
         }
 
         .results {
             display: none;
         }
 
-        .results-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .result-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(26, 26, 46, 0.15);
+            border: 2px solid rgba(26, 26, 46, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
         }
 
-        .results-table th {
-            background: linear-gradient(45deg, #1f2937, #374151);
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 500;
-            font-size: 14px;
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(26, 26, 46, 0.25);
         }
 
-        .results-table td {
-            padding: 12px;
-            border-bottom: 1px solid #f3f4f6;
-            font-size: 14px;
+        .result-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
         }
 
-        .results-table tr:hover {
-            background-color: #f9fafb;
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+
+        .card-content {
+            display: grid;
+            gap: 15px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 16px;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: #1a1a2e;
+        }
+
+        .return-rate {
+            font-size: 2.2em;
+            font-weight: 800;
+            text-align: center;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
         }
 
         .positive {
-            color: #059669;
-            font-weight: 600;
+            color: #27ae60;
+            background: rgba(39, 174, 96, 0.1);
         }
 
         .negative {
-            color: #dc2626;
-            font-weight: 600;
+            color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 2em;
+        }
+
+        .no-data-card {
+            background: #f8f9fa;
+            border: 2px dashed #ccc;
+            opacity: 0.7;
+        }
+
+        .no-data-card .card-title {
+            color: #888;
+        }
+
+        .no-data-text {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            font-size: 18px;
+            padding: 40px 20px;
         }
 
         .charts-section {
-            margin-top: 24px;
+            margin-top: 45px;
         }
 
-
+        .charts-section h2 {
+            color: #1a1a2e;
+            margin-bottom: 30px;
+            font-size: 2.4em;
+            font-weight: 700;
+            text-align: center;
+        }
 
         .chart-container {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
-            margin-top: 16px;
+            padding: 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(26, 26, 46, 0.15);
+            border: 2px solid rgba(26, 26, 46, 0.1);
+            margin-bottom: 30px;
         }
 
         .chart-title {
             text-align: center;
-            color: #1f2937;
-            margin-bottom: 16px;
-            font-size: 1.2em;
-            font-weight: 500;
+            color: #1a1a2e;
+            margin-bottom: 25px;
+            font-size: 2em;
+            font-weight: 700;
         }
 
+        .export-section {
+            margin-top: 35px;
+            text-align: center;
+        }
 
+        .export-btn {
+            background: linear-gradient(45deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            margin: 10px 15px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
+        }
 
         .error {
-            color: #dc2626;
-            background: #fef2f2;
-            padding: 12px 16px;
-            border-radius: 8px;
-            border-left: 3px solid #dc2626;
-            margin-bottom: 16px;
-            font-size: 14px;
+            color: #e74c3c;
+            background: #fdf2f2;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 6px solid #e74c3c;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 18px;
         }
 
-        /* Responsive tasarım */
         @media (max-width: 768px) {
             body {
-                padding: 5px;
+                padding: 10px;
             }
-            .container {
-                margin: 0;
-                border-radius: 12px;
+            
+            .header {
+                padding: 30px 15px;
             }
+            
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .header p {
+                font-size: 1.2em;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            .form-section {
+                padding: 25px 20px;
+            }
+            
             .form-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: 20px;
             }
-            .header {
-                padding: 16px;
+            
+            .cards-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
             }
-            .header h1 {
-                font-size: 1.8em;
+            
+            .result-card {
+                padding: 25px 20px;
             }
-            .header p {
-                font-size: 1em;
-            }
-            .content {
-                padding: 16px;
-            }
-            .form-section {
-                padding: 16px;
-                margin-bottom: 16px;
-            }
-            .table-container {
-                margin: 0 -16px;
-                padding: 0 16px;
-            }
-            .results-table {
-                font-size: 11px;
-                min-width: 600px;
-            }
-            .results-table th,
-            .results-table td {
-                padding: 8px 4px;
-                white-space: nowrap;
-            }
-            .results-table th:first-child,
-            .results-table td:first-child {
-                position: sticky;
-                left: 0;
-                background: white;
-                z-index: 1;
-                box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-            }
-            .results-table th:first-child {
-                background: linear-gradient(45deg, #1f2937, #374151);
-                color: white;
-            }
-            .chart-container {
-                padding: 16px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .header h1 {
+            
+            .card-title {
                 font-size: 1.5em;
             }
-            .results-table {
-                font-size: 10px;
-                min-width: 550px;
+            
+            .card-icon {
+                font-size: 2em;
             }
-            .results-table th,
-            .results-table td {
-                padding: 6px 3px;
+            
+            .return-rate {
+                font-size: 1.8em;
+                padding: 15px;
+            }
+            
+            .chart-container {
+                padding: 25px 20px;
+            }
+            
+            .export-btn {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-section h2 {
+                font-size: 2em;
+            }
+            
+            .charts-section h2 {
+                font-size: 2em;
+            }
+            
+            .input-group input, .input-group select {
+                padding: 15px 18px;
+                font-size: 16px;
+            }
+            
+            .calculate-btn {
+                padding: 18px 40px;
+                font-size: 20px;
             }
         }
     </style>
@@ -285,8 +407,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 Kar - Zarar Deveranı</h1>
-            <p>Yatırımınızı farklı endekslerle karşılaştırın</p>
+            <h1>🏗️ ARSARAZI Yatırım Analizi</h1>
+            <p>Yatırımınızı farklı endekslerle karşılaştırın ve gerçek performansınızı görün</p>
         </div>
 
         <div class="content">
@@ -302,7 +424,6 @@
                             <label for="buyPrice">Alım Fiyatı (TL):</label>
                             <input type="number" id="buyPrice" placeholder="örn: 500000">
                         </div>
-
                     </div>
                     <div>
                         <div class="input-group">
@@ -322,33 +443,23 @@
 
             <div id="results" class="results">
                 <div class="form-section">
-                    <h2>📊 Analiz Sonuçları</h2>
-                    <div class="table-container">
-                        <table class="results-table" id="resultsTable">
-                            <thead>
-                                <tr>
-                                    <th>Kriter</th>
-                                    <th>Alım Değeri</th>
-                                    <th>Satış Değeri</th>
-                                    <th>Fark</th>
-                                    <th>Getiri (%)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resultsBody">
-                            </tbody>
-                        </table>
+                    <h2>📊 Detaylı Analiz Sonuçları</h2>
+                    <div class="cards-container" id="cardsContainer">
+                        <!-- Kartlar buraya dinamik olarak eklenecek -->
                     </div>
                 </div>
 
                 <div class="charts-section">
-                    <h2>📊 Getiri Analizi</h2>
+                    <h2>📈 Getiri Oranları Karşılaştırması</h2>
                     <div class="chart-container">
-                        <div class="chart-title">Getiri Oranları Karşılaştırması</div>
                         <canvas id="returnsChart"></canvas>
                     </div>
                 </div>
 
-
+                <div class="export-section">
+                    <button class="export-btn" onclick="exportToPDF()">📄 PDF İndir</button>
+                    <button class="export-btn" onclick="exportToExcel()">📊 Excel İndir</button>
+                </div>
             </div>
         </div>
     </div>
@@ -670,14 +781,16 @@
             // Hesaplamalar
             const calculations = [];
             
-            // TL bazlı (her zaman mevcut)
+            // Nominal TL getirisi
             calculations.push({
-                criterion: 'TL',
+                criterion: 'Nominal TL Getirisi',
+                icon: '🏷️',
                 buyValue: buyPrice,
                 sellValue: sellPrice,
                 difference: sellPrice - buyPrice,
                 returnRate: ((sellPrice - buyPrice) / buyPrice) * 100,
-                hasData: true
+                hasData: true,
+                unit: 'TL'
             });
             
             // Külçe Altın bazlı
@@ -685,21 +798,14 @@
                 const buyGold = buyPrice / buyData['külçe altın/tl'];
                 const sellGold = sellPrice / sellData['külçe altın/tl'];
                 calculations.push({
-                    criterion: 'Külçe Altın (gram)',
+                    criterion: 'Külçe Altın Bazlı',
+                    icon: '🥇',
                     buyValue: buyGold,
                     sellValue: sellGold,
                     difference: sellGold - buyGold,
                     returnRate: ((sellGold - buyGold) / buyGold) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'Külçe Altın (gram)',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'gram'
                 });
             }
             
@@ -708,21 +814,14 @@
                 const buyUSD = buyPrice / buyData['usd/tl'];
                 const sellUSD = sellPrice / sellData['usd/tl'];
                 calculations.push({
-                    criterion: 'USD',
+                    criterion: 'USD Bazlı',
+                    icon: '💵',
                     buyValue: buyUSD,
                     sellValue: sellUSD,
                     difference: sellUSD - buyUSD,
                     returnRate: ((sellUSD - buyUSD) / buyUSD) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'USD',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'USD'
                 });
             }
             
@@ -731,21 +830,14 @@
                 const buyEUR = buyPrice / buyData['euro/tl'];
                 const sellEUR = sellPrice / sellData['euro/tl'];
                 calculations.push({
-                    criterion: 'EUR',
+                    criterion: 'EUR Bazlı',
+                    icon: '💶',
                     buyValue: buyEUR,
                     sellValue: sellEUR,
                     difference: sellEUR - buyEUR,
                     returnRate: ((sellEUR - buyEUR) / buyEUR) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'EUR',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'EUR'
                 });
             }
             
@@ -755,20 +847,13 @@
                 const realBuyPrice = (buyPrice / buyData['Tüfe']) * 100;
                 calculations.push({
                     criterion: 'TÜFE Bazlı Reel TL',
+                    icon: '📊',
                     buyValue: realBuyPrice,
                     sellValue: realSellPrice,
                     difference: realSellPrice - realBuyPrice,
                     returnRate: ((realSellPrice - realBuyPrice) / realBuyPrice) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'TÜFE Bazlı Reel TL',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'Reel TL'
                 });
             }
             
@@ -777,21 +862,14 @@
                 const buyHouseIndex = buyPrice / buyData['Konut endeks türkiye'];
                 const sellHouseIndex = sellPrice / sellData['Konut endeks türkiye'];
                 calculations.push({
-                    criterion: 'Konut Fiyat Endeksi (Türkiye)',
+                    criterion: 'Konut Endeksi (Türkiye)',
+                    icon: '🏠',
                     buyValue: buyHouseIndex,
                     sellValue: sellHouseIndex,
                     difference: sellHouseIndex - buyHouseIndex,
                     returnRate: ((sellHouseIndex - buyHouseIndex) / buyHouseIndex) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'Konut Fiyat Endeksi (Türkiye)',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'Endeks Birimi'
                 });
             }
             
@@ -800,21 +878,14 @@
                 const buyHouseIndex = buyPrice / buyData['Konut endeks balıkesir'];
                 const sellHouseIndex = sellPrice / sellData['Konut endeks balıkesir'];
                 calculations.push({
-                    criterion: 'Konut Fiyat Endeksi (Balıkesir)',
+                    criterion: 'Konut Endeksi (Balıkesir)',
+                    icon: '🏘️',
                     buyValue: buyHouseIndex,
                     sellValue: sellHouseIndex,
                     difference: sellHouseIndex - buyHouseIndex,
                     returnRate: ((sellHouseIndex - buyHouseIndex) / buyHouseIndex) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'Konut Fiyat Endeksi (Balıkesir)',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'Endeks Birimi'
                 });
             }
             
@@ -823,111 +894,93 @@
                 const buyBIST = buyPrice / buyData['bist'];
                 const sellBIST = sellPrice / sellData['bist'];
                 calculations.push({
-                    criterion: 'BIST 100',
+                    criterion: 'BIST 100 Bazlı',
+                    icon: '📈',
                     buyValue: buyBIST,
                     sellValue: sellBIST,
                     difference: sellBIST - buyBIST,
                     returnRate: ((sellBIST - buyBIST) / buyBIST) * 100,
-                    hasData: true
-                });
-            } else {
-                calculations.push({
-                    criterion: 'BIST 100',
-                    buyValue: 0,
-                    sellValue: 0,
-                    difference: 0,
-                    returnRate: 0,
-                    hasData: false
+                    hasData: true,
+                    unit: 'Borsa Birimi'
                 });
             }
             
             // Sonuçları getiri oranına göre sırala (en yüksekten en düşüğe)
-            // Önce veri olanları, sonra veri olmayanları sırala
-            calculations.sort((a, b) => {
-                if (a.hasData && !b.hasData) return -1;
-                if (!a.hasData && b.hasData) return 1;
-                return b.returnRate - a.returnRate;
-            });
+            calculations.sort((a, b) => b.returnRate - a.returnRate);
             
-            displayResults(calculations);
-            createCharts(calculations);
+            displayCards(calculations);
+            createChart(calculations);
             
             // Sonuçları göster
             document.getElementById('results').style.display = 'block';
             document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
         }
         
-        function displayResults(calculations) {
-            const tbody = document.getElementById('resultsBody');
-            tbody.innerHTML = '';
-            
-            // Veri olan hesaplamaları say
-            const dataAvailableCalculations = calculations.filter(calc => calc.hasData);
+        function displayCards(calculations) {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
             
             calculations.forEach((calc, index) => {
-                const row = document.createElement('tr');
+                const card = document.createElement('div');
                 
                 if (!calc.hasData) {
-                    // Veri yok durumu
-                    row.innerHTML = `
-                        <td><strong>❌ ${calc.criterion}</strong></td>
-                        <td style="color: #999; font-style: italic;">Veri Yok</td>
-                        <td style="color: #999; font-style: italic;">Veri Yok</td>
-                        <td style="color: #999; font-style: italic;">Veri Yok</td>
-                        <td style="color: #999; font-style: italic;">Veri Yok</td>
+                    card.className = 'result-card no-data-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div class="card-icon">${calc.icon}</div>
+                            <div class="card-title">${calc.criterion}</div>
+                        </div>
+                        <div class="no-data-text">Bu tarih aralığı için veri bulunamadı</div>
                     `;
-                    row.style.backgroundColor = '#f8f9fa';
                 } else {
-                    // Normal hesaplama
+                    card.className = 'result-card';
+                    
+                    // Ranking belirle
+                    let rankBadge = '';
+                    if (index === 0 && calc.returnRate > 0) rankBadge = '🥇';
+                    else if (index === 1 && calc.returnRate > 0) rankBadge = '🥈';
+                    else if (index === 2 && calc.returnRate > 0) rankBadge = '🥉';
+                    else if (index === calculations.length - 1 && calc.returnRate < 0) rankBadge = '⚠️';
+                    
                     const returnClass = calc.returnRate >= 0 ? 'positive' : 'negative';
                     const returnSymbol = calc.returnRate >= 0 ? '+' : '';
                     
-                    // Sadece veri olan hesaplamalar arasında medal ver
-                    const dataIndex = dataAvailableCalculations.findIndex(c => c.criterion === calc.criterion);
-                    let rankIcon = '';
-                    if (dataIndex === 0 && calc.returnRate > 0) {
-                        rankIcon = '🥇 ';
-                    } else if (dataIndex === 1 && calc.returnRate > 0) {
-                        rankIcon = '🥈 ';
-                    } else if (dataIndex === 2 && calc.returnRate > 0) {
-                        rankIcon = '🥉 ';
-                    } else if (dataIndex === dataAvailableCalculations.length - 1 && calc.returnRate < 0) {
-                        rankIcon = '⚠️ ';
-                    }
-                    
-                    let buyValueStr = calc.buyValue.toLocaleString('tr-TR', { 
-                        minimumFractionDigits: 2, 
-                        maximumFractionDigits: 2 
-                    });
-                    let sellValueStr = calc.sellValue.toLocaleString('tr-TR', { 
-                        minimumFractionDigits: 2, 
-                        maximumFractionDigits: 2 
-                    });
-                    let differenceStr = calc.difference.toLocaleString('tr-TR', { 
-                        minimumFractionDigits: 2, 
-                        maximumFractionDigits: 2 
-                    });
-                    
-                    row.innerHTML = `
-                        <td><strong>${rankIcon}${calc.criterion}</strong></td>
-                        <td>${buyValueStr}</td>
-                        <td>${sellValueStr}</td>
-                        <td class="${returnClass}">${returnSymbol}${differenceStr}</td>
-                        <td class="${returnClass}"><strong>${returnSymbol}${calc.returnRate.toFixed(2)}%</strong></td>
+                    card.innerHTML = `
+                        ${rankBadge ? `<div class="rank-badge">${rankBadge}</div>` : ''}
+                        <div class="card-header">
+                            <div class="card-icon">${calc.icon}</div>
+                            <div class="card-title">${calc.criterion}</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="metric-row">
+                                <span class="metric-label">Alım Değeri:</span>
+                                <span class="metric-value">${calc.buyValue.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${calc.unit}</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Satış Değeri:</span>
+                                <span class="metric-value">${calc.sellValue.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${calc.unit}</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Kazanç/Kayıp:</span>
+                                <span class="metric-value ${returnClass}">${returnSymbol}${calc.difference.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${calc.unit}</span>
+                            </div>
+                            <div class="return-rate ${returnClass}">
+                                ${returnSymbol}${calc.returnRate.toFixed(2)}%
+                            </div>
+                        </div>
                     `;
                 }
                 
-                tbody.appendChild(row);
+                container.appendChild(card);
             });
         }
         
         let returnsChart;
         
-        function createCharts(calculations) {
-            // TL hariç, sadece veri olan hesaplamaları grafikte göster
-            const validCalculations = calculations.filter(calc => calc.hasData && calc.criterion !== 'TL');
+        function createChart(calculations) {
+            // Nominal TL hariç diğer hesaplamaları grafikte göster
+            const validCalculations = calculations.filter(calc => calc.hasData && calc.criterion !== 'Nominal TL Getirisi');
             
-            // Getiri oranları grafiği
             const returnsCtx = document.getElementById('returnsChart').getContext('2d');
             
             if (returnsChart) {
@@ -936,7 +989,10 @@
             
             const labels = validCalculations.map(c => c.criterion);
             const returns = validCalculations.map(c => c.returnRate);
-            const colors = returns.map(r => r >= 0 ? 'rgba(5, 150, 105, 0.8)' : 'rgba(220, 38, 38, 0.8)');
+            
+            // Zıt renkler kullan - pozitif için açık yeşil, negatif için açık kırmızı
+            const colors = returns.map(r => r >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)');
+            const borderColors = returns.map(r => r >= 0 ? 'rgba(46, 204, 113, 1)' : 'rgba(231, 76, 60, 1)');
             
             returnsChart = new Chart(returnsCtx, {
                 type: 'bar',
@@ -946,22 +1002,31 @@
                         label: 'Getiri Oranı (%)',
                         data: returns,
                         backgroundColor: colors,
-                        borderColor: colors.map(c => c.replace('0.8', '1')),
-                        borderWidth: 1,
-                        borderRadius: 4,
+                        borderColor: borderColors,
+                        borderWidth: 3,
+                        borderRadius: 12,
                         borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             display: false
                         },
                         tooltip: {
+                            titleFont: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 15,
+                                weight: 'bold'
+                            },
                             callbacks: {
                                 label: function(context) {
-                                    return `${context.parsed.y.toFixed(2)}%`;
+                                    return `Getiri: ${context.parsed.y.toFixed(2)}%`;
                                 }
                             }
                         }
@@ -970,27 +1035,110 @@
                         y: {
                             beginAtZero: true,
                             ticks: {
+                                font: {
+                                    size: 14,
+                                    weight: 'bold'
+                                },
                                 callback: function(value) {
                                     return value + '%';
                                 }
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.1)'
                             }
                         },
                         x: {
                             ticks: {
+                                font: {
+                                    size: 13,
+                                    weight: 'bold'
+                                },
                                 maxRotation: 45,
                                 minRotation: 0
+                            },
+                            grid: {
+                                display: false
                             }
                         }
                     }
                 }
             });
+            
+            // Chart container yüksekliğini ayarla
+            document.getElementById('returnsChart').style.height = '400px';
         }
         
-
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const buyDate = document.getElementById('buyDate').value;
+            const sellDate = document.getElementById('sellDate').value;
+            const buyPrice = document.getElementById('buyPrice').value;
+            const sellPrice = document.getElementById('sellPrice').value;
+            
+            // Başlık
+            doc.setFontSize(20);
+            doc.text('ARSARAZI Yatırım Analiz Raporu', 20, 30);
+            
+            // Tarih bilgileri
+            doc.setFontSize(12);
+            doc.text(`Alım Tarihi: ${buyDate}`, 20, 50);
+            doc.text(`Satış Tarihi: ${sellDate}`, 20, 60);
+            doc.text(`Alım Fiyatı: ${parseInt(buyPrice).toLocaleString('tr-TR')} TL`, 20, 70);
+            doc.text(`Satış Fiyatı: ${parseInt(sellPrice).toLocaleString('tr-TR')} TL`, 20, 80);
+            
+            // Sonuçlar
+            doc.text('Analiz Sonuçları:', 20, 100);
+            
+            let y = 120;
+            const cards = document.querySelectorAll('.result-card:not(.no-data-card)');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const returnRate = card.querySelector('.return-rate').textContent;
+                
+                doc.text(`${title}: ${returnRate}`, 20, y);
+                y += 10;
+                
+                if (y > 260) {
+                    doc.addPage();
+                    y = 30;
+                }
+            });
+            
+            doc.save('arsarazi-analiz-raporu.pdf');
+        }
         
-
-        
-
+        function exportToExcel() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Kriter,Alım Değeri,Satış Değeri,Fark,Getiri (%)\n";
+            
+            const cards = document.querySelectorAll('.result-card:not(.no-data-card)');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent;
+                const metrics = card.querySelectorAll('.metric-value');
+                const returnRate = card.querySelector('.return-rate').textContent;
+                
+                const rowData = [
+                    `"${title}"`,
+                    `"${metrics[0].textContent}"`,
+                    `"${metrics[1].textContent}"`,
+                    `"${metrics[2].textContent}"`,
+                    `"${returnRate}"`
+                ];
+                csvContent += rowData.join(",") + "\n";
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "arsarazi-analiz-raporu.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
         
         // Sayfa yüklendiğinde
         window.onload = function() {
