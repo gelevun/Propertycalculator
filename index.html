@@ -3,1148 +3,605 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARSARAZI Yatırım Analizi</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <title>Reel Getiri Analiz Platformu</title>
+    
+    <!-- PWA Manifest Verisi (Gömülü) -->
+    <link rel="manifest" id="manifest-link">
+    
+    <!-- Tema Rengi -->
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <!-- Removed duplicate Google Fonts import and optimized font loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Stil Dosyası (Gömülü) -->
     <style>
+        /* Removed duplicate @import for Google Fonts to improve loading speed */
+        
+        /* Temel Sıfırlama ve Ayarlar */
+        :root {
+            --primary-color: #007bff;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --text-color: #333;
+            --light-text-color: #666;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --border-color: #dee2e6;
+            --shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            min-height: 100vh;
-            padding: 15px;
-            color: #ffffff;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 25px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            color: #333;
-        }
-
-        .header {
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 3.2em;
-            margin-bottom: 15px;
-            font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-        }
-
-        .header p {
-            font-size: 1.5em;
-            opacity: 0.95;
-            font-weight: 400;
-        }
-
-        .content {
-            padding: 30px 20px;
-        }
-
-        .form-section {
-            background: white;
-            border-radius: 20px;
-            padding: 35px;
-            margin-bottom: 30px;
-            box-shadow: 0 15px 35px rgba(26, 26, 46, 0.15);
-            border: 2px solid rgba(26, 26, 46, 0.1);
-        }
-
-        .form-section h2 {
-            color: #1a1a2e;
-            margin-bottom: 25px;
-            font-size: 2.4em;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-        }
-
-        .input-group {
-            margin-bottom: 25px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 12px;
-            font-weight: 700;
-            color: #1a1a2e;
-            font-size: 1.2em;
-        }
-
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 18px 20px;
-            border: 3px solid #e1e8ed;
-            border-radius: 15px;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            background-color: white;
-            font-weight: 600;
-        }
-
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: #1a1a2e;
-            box-shadow: 0 0 0 4px rgba(26, 26, 46, 0.15);
-        }
-
-        .calculate-btn {
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-            color: white;
-            border: none;
-            padding: 20px 50px;
-            font-size: 22px;
-            font-weight: 700;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 25px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
-
-        .calculate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(26, 26, 46, 0.4);
-        }
-
-        .results {
-            display: none;
-        }
-
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-
-        .result-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(26, 26, 46, 0.15);
-            border: 2px solid rgba(26, 26, 46, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .result-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(26, 26, 46, 0.25);
-        }
-
-        .result-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(45deg, #1a1a2e, #16213e);
-        }
-
-        .card-header {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
             display: flex;
-            align-items: center;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Ana Konteyner */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--light-text-color);
+            margin-bottom: 30px;
+        }
+
+        /* Form Stilleri */
+        #analysis-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        .card-icon {
-            font-size: 2.5em;
-            margin-right: 15px;
+        .form-group {
+            display: flex;
+            flex-direction: column;
         }
 
-        .card-title {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #1a1a2e;
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
         }
 
-        .card-content {
-            display: grid;
+        .form-group input {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        #analysis-form button {
+            grid-column: 1 / -1;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #analysis-form button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Disabled button state for better UX during loading */
+        #analysis-form button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        /* Bildirim Alanı */
+        .notification {
+            text-align: center;
+            padding: 10px;
+            margin: 0 0 15px 0;
+            border-radius: 8px;
+            background-color: #e9ecef;
+            color: #495057;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        /* Yükleme Göstergesi (Spinner) */
+        #loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
             gap: 15px;
         }
 
-        .metric-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
+        #loader.hidden {
+            display: none;
         }
 
-        .metric-row:last-child {
-            border-bottom: none;
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 123, 255, 0.2);
+            border-left-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .metric-label {
-            font-weight: 600;
-            color: #555;
-            font-size: 16px;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
-        .metric-value {
-            font-weight: 700;
-            font-size: 18px;
-            color: #1a1a2e;
+        /* Sonuç Kartları */
+        #results-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .return-rate {
-            font-size: 2.2em;
-            font-weight: 800;
-            text-align: center;
+        .card {
+            background-color: var(--card-background);
             padding: 20px;
-            border-radius: 15px;
-            margin: 15px 0;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .positive {
-            color: #27ae60;
-            background: rgba(39, 174, 96, 0.1);
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
 
-        .negative {
-            color: #e74c3c;
-            background: rgba(231, 76, 60, 0.1);
+        .card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.2rem;
         }
 
-        .rank-badge {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 2em;
+        .card p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: var(--light-text-color);
         }
 
-        .no-data-card {
-            background: #f8f9fa;
-            border: 2px dashed #ccc;
-            opacity: 0.7;
+        .card p strong {
+            color: var(--text-color);
         }
 
-        .no-data-card .card-title {
-            color: #888;
-        }
-
-        .no-data-text {
-            text-align: center;
-            color: #999;
-            font-style: italic;
-            font-size: 18px;
-            padding: 40px 20px;
-        }
-
-        .charts-section {
-            margin-top: 45px;
-        }
-
-        .charts-section h2 {
-            color: #1a1a2e;
-            margin-bottom: 30px;
-            font-size: 2.4em;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .chart-container {
-            background: white;
-            padding: 35px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(26, 26, 46, 0.15);
-            border: 2px solid rgba(26, 26, 46, 0.1);
-            margin-bottom: 30px;
-        }
-
-        .chart-title {
-            text-align: center;
-            color: #1a1a2e;
-            margin-bottom: 25px;
-            font-size: 2em;
-            font-weight: 700;
-        }
-
-        .export-section {
-            margin-top: 35px;
-            text-align: center;
-        }
-
-        .export-btn {
-            background: linear-gradient(45deg, #27ae60, #229954);
-            color: white;
-            border: none;
-            padding: 18px 40px;
-            margin: 10px 15px;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        .export-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(39, 174, 96, 0.3);
-        }
-
-        .error {
-            color: #e74c3c;
-            background: #fdf2f2;
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 6px solid #e74c3c;
-            margin-bottom: 25px;
+        .kar {
             font-weight: 600;
-            font-size: 18px;
+            color: var(--success-color) !important;
         }
 
-        @media (max-width: 768px) {
+        .zarar {
+            font-weight: 600;
+            color: var(--danger-color) !important;
+        }
+
+        /* Enhanced percentage styling with better visual hierarchy */
+        .percentage {
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .percentage.kar {
+            background-color: rgba(40, 167, 69, 0.1);
+            border: 1px solid var(--success-color);
+        }
+
+        .percentage.zarar {
+            background-color: rgba(220, 53, 69, 0.1);
+            border: 1px solid var(--danger-color);
+        }
+
+        /* Mobil Uyumluluk (Responsive) */
+        @media (max-width: 600px) {
             body {
                 padding: 10px;
             }
             
-            .header {
-                padding: 30px 15px;
+            .container {
+                padding: 20px;
             }
             
-            .header h1 {
-                font-size: 2.5em;
-            }
-            
-            .header p {
-                font-size: 1.2em;
-            }
-            
-            .content {
-                padding: 20px 15px;
-            }
-            
-            .form-section {
-                padding: 25px 20px;
-            }
-            
-            .form-grid {
+            #analysis-form {
                 grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .cards-container {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .result-card {
-                padding: 25px 20px;
-            }
-            
-            .card-title {
-                font-size: 1.5em;
-            }
-            
-            .card-icon {
-                font-size: 2em;
-            }
-            
-            .return-rate {
-                font-size: 1.8em;
-                padding: 15px;
-            }
-            
-            .chart-container {
-                padding: 25px 20px;
-            }
-            
-            .export-btn {
-                width: 100%;
-                margin: 10px 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 2em;
-            }
-            
-            .form-section h2 {
-                font-size: 2em;
-            }
-            
-            .charts-section h2 {
-                font-size: 2em;
-            }
-            
-            .input-group input, .input-group select {
-                padding: 15px 18px;
-                font-size: 16px;
-            }
-            
-            .calculate-btn {
-                padding: 18px 40px;
-                font-size: 20px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏗️ ARSARAZI Yatırım Analizi</h1>
-            <p>Yatırımınızı farklı endekslerle karşılaştırın ve gerçek performansınızı görün</p>
+
+    <main class="container">
+        <h1>Reel Getiri Analizi</h1>
+        <p class="subtitle">Yatırımınızın enflasyon ve döviz karşısındaki gerçek performansını ölçün.</p>
+
+        <form id="analysis-form">
+            <div class="form-group">
+                <label for="alis-tarihi">Alış Tarihi</label>
+                <input type="date" id="alis-tarihi" required>
+            </div>
+            <div class="form-group">
+                <label for="alis-fiyati">Alış Fiyatı (TL)</label>
+                <input type="number" id="alis-fiyati" placeholder="örn: 1.000.000" required>
+            </div>
+            <div class="form-group">
+                <label for="satis-tarihi">Satış Tarihi</label>
+                <input type="date" id="satis-tarihi" required>
+            </div>
+            <div class="form-group">
+                <label for="satis-fiyati">Satış Fiyatı (TL)</label>
+                <input type="number" id="satis-fiyati" placeholder="örn: 3.000.000" required>
+            </div>
+            <button type="submit" id="analyze-button">Analiz Et</button>
+        </form>
+
+        <div id="notification-area" class="notification"></div>
+
+        <div id="loader" class="hidden">
+            <div class="spinner"></div>
+            <span>Veriler hesaplanıyor...</span>
         </div>
 
-        <div class="content">
-            <div class="form-section">
-                <h2>🏠 Yatırım Bilgileri</h2>
-                <div class="form-grid">
-                    <div>
-                        <div class="input-group">
-                            <label for="buyDate">Alım Tarihi:</label>
-                            <select id="buyDate"></select>
-                        </div>
-                        <div class="input-group">
-                            <label for="buyPrice">Alım Fiyatı (TL):</label>
-                            <input type="number" id="buyPrice" placeholder="örn: 500000">
-                        </div>
-                    </div>
-                    <div>
-                        <div class="input-group">
-                            <label for="sellDate">Satış Tarihi:</label>
-                            <select id="sellDate"></select>
-                        </div>
-                        <div class="input-group">
-                            <label for="sellPrice">Satış Fiyatı (TL):</label>
-                            <input type="number" id="sellPrice" placeholder="örn: 800000">
-                        </div>
-                    </div>
-                </div>
-                <button class="calculate-btn" onclick="calculateReturns()">🔍 Analizi Başlat</button>
-            </div>
-
-            <div id="errorMsg" class="error" style="display: none;"></div>
-
-            <div id="results" class="results">
-                <div class="form-section">
-                    <h2>📊 Detaylı Analiz Sonuçları</h2>
-                    <div class="cards-container" id="cardsContainer">
-                        <!-- Kartlar buraya dinamik olarak eklenecek -->
-                    </div>
-                </div>
-
-                <div class="charts-section">
-                    <h2>📈 Getiri Oranları Karşılaştırması</h2>
-                    <div class="chart-container">
-                        <canvas id="returnsChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="export-section">
-                    <button class="export-btn" onclick="exportToPDF()">📄 PDF İndir</button>
-                    <button class="export-btn" onclick="exportToExcel()">📊 Excel İndir</button>
-                </div>
-            </div>
+        <div id="results-container">
+            <!-- Analiz sonuçları buraya dinamik olarak eklenecek -->
         </div>
-    </div>
+    </main>
 
+    <!-- JavaScript Mantığı (Gömülü) -->
     <script>
-        // CSV verilerini parse et
-        const csvData = `Tarih;külçe altın/tl;usd/tl;euro/tl;Tüfe;Konut endeks türkiye;Konut endeks balıkesir;bist
-2010-01;52,78;1,47;2,10;174,07;4,57;4,43;548,65
-2010-02;53,55;1,51;2,06;176,59;4,57;4,43;551,03
-2010-03;55,20;1,53;2,08;177,62;4,58;4,49;596,79
-2010-04;55,22;1,49;2,00;178,68;4,63;4,46;627,66
-2010-05;60,50;1,53;1,94;178,04;4,68;4,49;546,46
-2010-06;62,43;1,57;1,92;177,04;4,68;4,35;583,28
-2010-07;59,54;1,54;1,96;176,19;4,68;4,59;599,29
-2010-08;59,50;1,50;1,94;176,90;4,74;4,64;610,02
-2010-09;61,63;1,49;1,94;179,07;4,77;4,62;664,27
-2010-10;61,56;1,42;1,97;182,35;4,75;4,52;685,90
-2010-11;63,87;1,43;1,96;182,40;4,84;4,63;677,15
-2010-12;68,04;1,51;2,00;181,85;4,86;4,58;737,66
-2011-01;68,33;1,55;2,07;182,60;4,90;4,63;726,40
-2011-02;70,51;1,58;2,16;183,93;4,95;4,62;692,85
-2011-03;72,56;1,57;2,20;184,70;5,00;4,65;757,73
-2011-04;72,50;1,52;2,19;186,30;5,04;4,69;837,87
-2011-05;76,52;1,56;2,25;190,81;5,09;4,70;773,29
-2011-06;78,87;1,59;2,29;188,08;5,14;4,68;764,86
-2011-07;83,70;1,65;2,35;187,31;5,10;4,72;735,71
-2011-08;100,10;1,74;2,50;188,67;5,15;4,82;625,54
-2011-09;102,70;1,79;2,46;190,09;5,17;4,82;674,93
-2011-10;98,20;1,83;2,50;196,31;5,26;4,80;685,62
-2011-11;100,78;1,80;2,45;199,70;5,27;4,74;630,37
-2011-12;98,94;1,86;2,45;200,85;5,24;4,71;608,93
-2012-01;97,87;1,84;2,37;201,98;5,40;4,87;645,80
-2012-02;98,57;1,75;2,31;203,12;5,45;4,75;690,69
-2012-03;96,76;1,78;2,35;203,96;5,48;4,89;719,41
-2012-04;94,95;1,78;2,34;207,05;5,55;4,99;709,68
-2012-05;92,92;1,80;2,31;206,61;5,63;5,05;649,71
-2012-06;93,78;1,82;2,27;204,76;5,67;5,03;688,05
-2012-07;93,17;1,80;2,22;204,29;5,73;5,13;693,84
-2012-08;94,66;1,79;2,21;205,43;5,77;5,25;718,50
-2012-09;101,72;1,80;2,31;207,55;5,80;5,18;715,30
-2012-10;100,94;1,79;2,33;211,62;5,80;4,97;727,26
-2012-11;99,20;1,79;2,29;212,42;5,83;5,11;725,08
-2012-12;96,65;1,78;2,33;213,23;5,89;5,08;755,81
-2013-01;95,33;1,76;2,34;216,74;5,96;5,17;784,39
-2013-02;93,30;1,77;2,37;217,39;6,02;5,14;777,30
-2013-03;92,90;1,81;2,34;218,83;6,12;5,23;810,98
-2013-04;87,02;1,80;2,34;219,75;6,15;5,24;835,63
-2013-05;83,96;1,82;2,37;220,07;6,25;5,35;855,25
-2013-06;81,32;1,89;2,50;221,75;6,32;5,39;803,49
-2013-07;80,32;1,93;2,52;222,44;6,39;5,43;809,73
-2013-08;85,53;1,95;2,60;222,21;6,43;5,58;738,89
-2013-09;87,85;2,02;2,69;223,91;6,44;5,48;808,69
-2013-10;84,03;1,99;2,71;227,94;6,52;5,60;854,96
-2013-11;83,49;2,02;2,73;227,96;6,53;5,52;869,01
-2013-12;81,85;2,06;2,82;229,01;6,64;5,38;769,34
-2014-01;89,62;2,22;3,02;233,54;6,67;5,41;765,43
-2014-02;92,30;2,21;3,02;234,54;6,73;5,43;794,94
-2014-03;95,12;2,22;3,07;237,18;6,84;5,46;776,67
-2014-04;89,35;2,13;2,94;240,37;6,88;5,64;832,72
-2014-05;86,70;2,09;2,87;241,32;6,99;5,67;855,63
-2014-06;88,10;2,12;2,88;242,07;7,06;5,82;874,81
-2014-07;89,57;2,12;2,88;243,17;7,16;5,82;883,76
-2014-08;90,02;2,16;2,88;243,40;7,23;6,16;891,03
-2014-09;88,11;2,20;2,85;243,74;7,33;5,93;868,41
-2014-10;88,11;2,26;2,86;248,37;7,37;6,00;896,65
-2014-11;84,88;2,23;2,79;248,82;7,44;5,96;926,70
-2014-12;88,92;2,29;2,82;247,72;7,53;6,13;957,55
-2015-01;93,79;2,33;2,72;250,45;7,65;6,22;1003,59
-2015-02;97,32;2,46;2,79;252,24;7,78;6,17;997,75
-2015-03;98,77;2,58;2,80;255,23;7,91;6,32;975,58
-2015-04;102,37;2,65;2,85;259,39;8,02;6,55;1043,93
-2015-05;101,73;2,65;2,96;260,85;8,12;6,64;1020,45
-2015-06;102,15;2,70;3,03;259,51;8,26;6,93;1025,06
-2015-07;98,32;2,69;2,97;259,74;8,31;6,84;1035,86
-2015-08;103,61;2,85;3,17;260,78;8,32;7,03;978,54
-2015-09;108,95;3,00;3,37;263,11;8,45;6,88;978,29
-2015-10;108,67;2,93;3,30;267,20;8,50;6,86;994,90
-2015-11;100,12;2,87;3,09;268,98;8,67;6,85;1036,65
-2015-12;100,78;2,92;3,17;269,54;8,67;7,00;1051,71
-2016-01;106,48;3,01;3,27;274,44;8,82;7,19;1056,61
-2016-02;114,18;2,94;3,26;274,38;8,89;7,35;1077,10
-2016-03;115,80;2,89;3,21;274,27;8,97;7,35;1106,81
-2016-04;113,37;2,83;3,21;276,42;9,06;7,42;1133,65
-2016-05;120,42;2,93;3,31;278,02;9,19;7,51;1090,37
-2016-06;120,18;2,92;3,28;279,33;9,27;7,85;1060,62
-2016-07;126,48;2,96;3,27;282,58;9,30;8,17;1053,97
-2016-08;127,92;2,96;3,32;281,76;9,42;8,07;1058,39
-2016-09;126,85;2,96;3,32;282,27;9,50;8,06;1065,11
-2016-10;125,51;3,07;3,39;286,33;9,53;8,18;1092,52
-2016-11;132,20;3,27;3,53;287,81;9,62;8,23;1056,57
-2016-12;130,50;3,49;3,68;292,54;9,70;8,09;1125,29
-2017-01;144,58;3,73;3,97;299,74;9,83;8,33;1199,30
-2017-02;145,68;3,67;3,91;302,17;9,96;8,60;1220,39
-2017-03;145,55;3,67;3,92;305,24;10,07;8,75;1231,52
-2017-04;150,00;3,65;3,91;309,23;10,18;8,99;1262,63
-2017-05;143,42;3,56;3,93;310,61;10,24;9,00;1299,10
-2017-06;143,01;3,52;3,95;309,78;10,33;9,03;1331,83
-2017-07;142,27;3,56;4,09;310,24;10,34;9,48;1413,55
-2017-08;145,30;3,51;4,14;311,85;10,24;9,24;1422,43
-2017-09;147,42;3,47;4,14;313,88;10,47;9,56;1369,99
-2017-10;151,76;3,66;4,31;320,40;10,50;9,30;1440,45
-2017-11;160,43;3,88;4,55;325,18;10,53;9,52;1363,37
-2017-12;158,48;3,85;4,55;327,41;10,61;9,50;1523,61
-2018-01;162,09;3,77;4,59;330,75;10,68;9,60;1624,80
-2018-02;162,66;3,78;4,67;333,17;10,75;9,82;1655,48
-2018-03;166,25;3,88;4,79;336,48;10,86;9,91;1630,35
-2018-04;174,69;4,05;4,98;342,78;10,93;10,19;1552,47
-2018-05;187,22;4,41;5,22;348,34;11,13;10,26;1410,75
-2018-06;190,51;4,63;5,41;357,44;11,27;10,45;1404,08
-2018-07;191,64;4,75;5,55;359,41;11,19;10,70;1368,01
-2018-08;233,55;5,73;6,61;367,66;11,14;10,34;1297,50
-2018-09;242,19;6,37;7,42;390,84;11,20;10,71;1325,12
-2018-10;231,22;5,86;6,74;401,27;11,30;10,61;1209,77
-2018-11;212,87;5,37;6,11;395,48;11,32;10,28;1273,86
-2018-12;216,50;5,31;6,04;393,88;11,19;10,32;1190,22
-2019-01;225,32;5,37;6,13;398,07;11,18;10,39;1269,77
-2019-02;224,94;5,26;5,98;398,71;11,19;10,52;1328,83
-2019-03;231,86;5,44;6,16;402,81;11,24;10,79;1260,06
-2019-04;239,39;5,74;6,45;409,63;11,31;10,77;1263,52
-2019-05;250,82;6,05;6,77;413,52;11,46;11,03;1184,64
-2019-06;259,50;5,81;6,56;413,63;11,40;11,29;1252,28
-2019-07;259,37;5,67;6,37;419,24;11,47;12,09;1309,81
-2019-08;267,59;5,62;6,26;422,84;11,78;11,60;1334,43
-2019-09;277,11;5,71;6,29;427,04;11,88;11,62;1474,91
-2019-10;280,10;5,78;6,39;435,59;12,01;11,62;1537,87
-2019-11;274,29;5,73;6,34;437,25;12,14;11,87;1803,22
-2019-12;279,74;5,84;6,48;440,50;12,29;11,90;2099,32
-2020-01;297,91;5,92;6,58;446,45;12,61;12,05;2402,46
-2020-02;315,32;6,04;6,59;448,02;12,89;12,31;2199,26
-2020-03;330,65;6,31;6,99;450,58;13,13;12,77;1826,68
-2020-04;372,91;6,82;7,42;454,43;13,15;12,59;2323,79
-2020-05;386,81;6,95;7,56;460,62;13,40;13,10;2511,44
-2020-06;382,84;6,81;7,66;465,84;14,32;14,09;2879,70
-2020-07;413,81;6,85;7,82;468,56;14,85;14,75;3207,23
-2020-08;471,63;7,25;8,58;472,61;15,06;14,97;3261,74
-2020-09;467,61;7,51;8,86;477,21;15,23;15,21;3885,20
-2020-10;488,86;7,87;9,27;487,38;15,57;15,43;4000,91
-2020-11;478,84;8,00;9,46;498,58;16,06;16,05;4318,64
-2020-12;462,72;7,72;9,38;504,81;16,23;15,72;4717,69
-2021-01;449,12;7,39;9,01;513,30;16,49;16,14;5296,07
-2021-02;413,65;7,07;8,56;517,96;16,98;16,37;5343,86
-2021-03;423,38;7,63;9,09;523,53;17,32;17,35;5493,83
-2021-04;464,33;8,16;9,73;532,32;17,86;17,86;4986,67
-2021-05;501,26;8,34;10,13;537,05;18,27;19,30;4833,77
-2021-06;512,01;8,60;10,37;547,48;18,76;19,38;4639,84
-2021-07;500,55;8,61;10,19;557,36;19,41;20,94;4822,47
-2021-08;489,92;8,48;9,98;563,60;19,99;20,56;5016,50
-2021-09;470,59;8,51;10,03;570,66;20,77;20,76;4954,27
-2021-10;521,44;9,14;10,60;584,32;21,65;21,83;5219,76
-2021-11;634,13;10,52;12,01;604,84;23,22;23,69;5746,87
-2021-12;817,61;13,53;15,29;686,95;26,54;26,22;5837,33
-2022-01;795,39;13,52;15,31;763,23;29,95;30,40;6016,35
-2022-02;824,04;13,62;15,44;799,93;32,30;31,19;5529,97
-2022-03;926,51;14,57;16,05;843,64;35,39;34,08;6152,64
-2022-04;921,01;14,68;15,93;904,79;39,44;37,72;6484,88
-2022-05;944,07;15,62;16,53;931,76;44,56;43,83;6768,97
-2022-06;1018,48;16,96;17,96;977,90;49,53;48,43;6987,97
-2022-07;998,91;17,39;17,77;1001,03;53,04;51,47;7783,72
-2022-08;1040,39;17,99;18,25;1015,65;56,26;56,02;8751,29
-2022-09;1010,29;18,28;18,13;1046,89;59,48;56,58;9396,24
-2022-10;1010,47;18,56;18,25;1084,00;62,09;60,76;12065,49
-2022-11;1047,70;18,59;18,92;1115,26;64,20;63,52;15580,39
-2022-12;1091,54;18,64;19,70;1128,45;66,85;63,75;16577,48
-2023-01;1173,95;18,76;20,20;1203,48;73,88;72,67;14152,60
-2023-02;1153,58;18,82;20,19;1241,33;78,40;75,71;14518,14
-2023-03;1201,91;18,97;20,29;1269,75;84,68;83,53;14238,03
-2023-04;1348,78;19,30;21,15;1300,04;87,55;85,42;13782,22
-2023-05;1433,73;19,68;21,43;1300,60;91,12;88,91;14405,46
-2023-06;1495,28;23,06;24,94;1351,59;95,66;92,59;16294,45
-2023-07;1689,14;26,42;29,20;1479,84;101,87;102,48;21342,40
-2023-08;1716,91;26,95;29,43;1614,31;108,97;109,98;26010,75
-2023-09;1710,53;26,94;28,82;1691,04;116,18;117,11;29440,60
-2023-10;1795,05;27,80;29,36;1749,11;119,18;123,55;27648,71
-2023-11;1868,94;28,59;30,85;1806,50;120,07;120,23;29214,30
-2023-12;1984,48;29,02;31,66;1859,38;122,43;127,82;25771,83
-2024-01;2069,67;30,00;32,75;1984,02;125,71;126,17;30860,19
-2024-02;2085,58;30,70;33,14;2073,88;129,87;131,92;35654,51
-2024-03;2394,82;31,93;34,71;2139,47;131,49;138,27;33151,43
-2024-04;2539,01;32,27;34,63;2207,50;132,70;134,77;35506,72
-2024-05;2465,24;32,19;34,78;2281,85;137,90;143,05;34188,34
-2024-06;2477,29;32,46;34,98;2319,29;140,03;146,22;35054,93
-2024-07;2562,67;32,84;35,58;2394,10;141,33;149,17;35515,23
-2024-08;2731,34;33,56;36,91;2453,34;146,50;147,88;33399,80
-2024-09;2907,12;33,97;37,72;2526,16;148,01;152,53;32797,60
-2024-10;3090,72;34,17;37,33;2598,91;151,08;154,92;31954,62
-2024-11;3076,73;34,36;36,57;2657,23;155,38;165,40;34487,56
-2024-12;3041,08;34,90;36,58;2684,55;158,46;166,14;36090,67
-2025-01;3124,41;35,46;36,72;2819,65;165,88;174,74;35330,40
-2025-02;3458,78;36,09;37,58;2883,75;170,55;177,78;35424,74
-2025-03;3648,33;36,97;39,87;2954,69;173,88;182,10;36758,45
-2025-04;4052,18;38,02;42,65;3043,23;176,41;181,64;38362,46
-2025-05;4192,48;38,69;43,66;3089,74;182,33;189,96;39207,31
-2025-06;4314,26;39,34;45,26;3132,17;185,98;193,64;42394,13
-2025-07;4338,79;40,11;46,91;3196,66;;;48548,87
-2025-08;;40,57;46,87;;;;50224,82`;
+        document.addEventListener('DOMContentLoaded', () => {
 
-        let data = [];
-        
-        function parseCSV() {
-            const lines = csvData.trim().split('\n');
-            const headers = lines[0].split(';');
-            
-            for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(';');
-                if (values[0] && values[0] !== '') {
-                    const row = {};
-                    headers.forEach((header, index) => {
-                        const value = values[index];
-                        if (value && value !== '') {
-                            row[header] = header === 'Tarih' ? value : parseFloat(value.replace(',', '.'));
-                        }
+            // Gerekli DOM elemanlarını seçme
+            const form = document.getElementById('analysis-form');
+            const alisTarihiInput = document.getElementById('alis-tarihi');
+            const alisFiyatiInput = document.getElementById('alis-fiyati');
+            const satisTarihiInput = document.getElementById('satis-tarihi');
+            const satisFiyatiInput = document.getElementById('satis-fiyati');
+            const loader = document.getElementById('loader');
+            const resultsContainer = document.getElementById('results-container');
+            const notificationArea = document.getElementById('notification-area');
+            const analyzeButton = document.getElementById('analyze-button');
+
+            const apiCache = new Map();
+            const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+            // Tarih inputlarına varsayılan değerler ata ve gelecekteki tarihleri engelle
+            const today = new Date();
+            const todayString = today.toISOString().split('T')[0];
+
+            satisTarihiInput.value = todayString;
+            alisTarihiInput.setAttribute('max', todayString);
+            satisTarihiInput.setAttribute('max', todayString);
+
+            const oneYearAgo = new Date();
+            oneYearAgo.setFullYear(today.getFullYear() - 1);
+            const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
+            alisTarihiInput.value = oneYearAgoString;
+
+            const API_URL = 'https://script.google.com/macros/s/AKfycbxTWH3iXuFQRUo-ZpXAWy4y5SiPXwytJPDtsKI7LtbmdvhteAUMWRPdFp_IdjC58CGo/exec';
+
+            // Form gönderildiğinde çalışacak fonksiyon
+            form.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                // Girdi değerlerini al
+                const alisTarihi = alisTarihiInput.value;
+                const alisFiyati = parseFloat(alisFiyatiInput.value);
+                const satisTarihi = satisTarihiInput.value;
+                const satisFiyati = parseFloat(satisFiyatiInput.value);
+
+                // Girdi doğrulama
+                if (!alisTarihi || !alisFiyati || !satisTarihi || !satisFiyati) {
+                    alert('Lütfen tüm alanları doldurun.');
+                    return;
+                }
+
+                if (alisFiyati <= 0 || satisFiyati <= 0) {
+                    alert('Fiyatlar sıfırdan büyük olmalıdır.');
+                    return;
+                }
+                
+                if (new Date(satisTarihi) < new Date(alisTarihi)) {
+                    alert('Satış tarihi, alış tarihinden önce olamaz.');
+                    return;
+                }
+
+                // Tarihleri hafta sonu için düzelt
+                notificationArea.style.display = 'none';
+                const adjustedAlisDate = getPreviousWeekday(new Date(alisTarihi + 'T12:00:00Z'));
+                const adjustedSatisDate = getPreviousWeekday(new Date(satisTarihi + 'T12:00:00Z'));
+                
+                const adjustedAlisTarihiString = adjustedAlisDate.toISOString().split('T')[0];
+                const adjustedSatisTarihiString = adjustedSatisDate.toISOString().split('T')[0];
+
+                // Eğer tarih değiştiyse kullanıcıyı bilgilendir ve inputları güncelle
+                if (alisTarihi !== adjustedAlisTarihiString || satisTarihi !== adjustedSatisTarihiString) {
+                    notificationArea.textContent = 'Not: Seçtiğiniz tarih hafta sonuna denk geldiği için analiz en yakın iş gününe göre yapılmıştır.';
+                    notificationArea.style.display = 'block';
+                    alisTarihiInput.value = adjustedAlisTarihiString;
+                    satisTarihiInput.value = adjustedSatisTarihiString;
+                }
+
+                // API'ye istek gönderme
+                fetchDataAndAnalyze(adjustedAlisTarihiString, alisFiyati, adjustedSatisTarihiString, satisFiyati);
+            });
+
+            function getPreviousWeekday(date) {
+                const day = date.getUTCDay();
+                if (day === 0) {
+                    date.setUTCDate(date.getUTCDate() - 2);
+                } else if (day === 6) {
+                    date.setUTCDate(date.getUTCDate() - 1);
+                }
+                return date;
+            }
+
+            async function fetchDataAndAnalyze(alisTarihi, alisFiyati, satisTarihi, satisFiyati) {
+                analyzeButton.disabled = true;
+                analyzeButton.textContent = 'Analiz Ediliyor...';
+                
+                loader.classList.remove('hidden');
+                resultsContainer.innerHTML = '';
+
+                const cacheKey = `${alisTarihi}-${satisTarihi}`;
+                const cachedData = apiCache.get(cacheKey);
+                
+                if (cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
+                    console.log('Using cached data');
+                    displayResults(cachedData.data, alisFiyati, satisFiyati);
+                    loader.classList.add('hidden');
+                    analyzeButton.disabled = false;
+                    analyzeButton.textContent = 'Analiz Et';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('alisTarihi', formatDateForAPI(alisTarihi));
+                formData.append('satisTarihi', formatDateForAPI(satisTarihi));
+
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: formData,
+                        redirect: 'follow',
+                        signal: controller.signal
                     });
-                    if (Object.keys(row).length > 1) {
-                        data.push(row);
-                    }
-                }
-            }
-        }
+                    
+                    clearTimeout(timeoutId);
 
-        function populateDateSelects() {
-            const buySelect = document.getElementById('buyDate');
-            const sellSelect = document.getElementById('sellDate');
-            
-            buySelect.innerHTML = '<option value="">Tarih Seçiniz</option>';
-            sellSelect.innerHTML = '<option value="">Tarih Seçiniz</option>';
-            
-            // Veriyi yıl ve aya göre grupla
-            const years = {};
-            data.forEach(row => {
-                if (row.Tarih) {
-                    const [year, month] = row.Tarih.split('-');
-                    if (!years[year]) {
-                        years[year] = [];
+                    if (!response.ok) {
+                        throw new Error(`API Hatası: ${response.statusText}`);
                     }
-                    years[year].push({
-                        value: row.Tarih,
-                        text: `${getMonthName(parseInt(month))} ${year}`
+
+                    const data = await response.json();
+                    
+                    apiCache.set(cacheKey, {
+                        data: data,
+                        timestamp: Date.now()
                     });
-                }
-            });
-            
-            // Yılları ters sırada (en yeni en üstte)
-            Object.keys(years).sort((a, b) => b - a).forEach(year => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = year;
-                
-                // Ayları ters sırada (en yeni en üstte)
-                years[year].reverse().forEach(item => {
-                    const option = new Option(item.text, item.value);
-                    optgroup.appendChild(option);
-                });
-                
-                buySelect.appendChild(optgroup.cloneNode(true));
-                sellSelect.appendChild(optgroup);
-            });
-        }
-        
-        function getMonthName(month) {
-            const months = [
-                '', 'Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
-                'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'
-            ];
-            return months[month];
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMsg');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            document.getElementById('results').style.display = 'none';
-        }
-
-        function hideError() {
-            document.getElementById('errorMsg').style.display = 'none';
-        }
-
-        function findDataByDate(date) {
-            return data.find(row => row.Tarih === date);
-        }
-
-        function calculateReturns() {
-            hideError();
-            
-            const buyDate = document.getElementById('buyDate').value;
-            const sellDate = document.getElementById('sellDate').value;
-            const buyPrice = parseFloat(document.getElementById('buyPrice').value);
-            const sellPrice = parseFloat(document.getElementById('sellPrice').value);
-            
-            // Validasyon
-            if (!buyDate || !sellDate || !buyPrice || !sellPrice) {
-                showError('Lütfen tüm alanları doldurunuz.');
-                return;
-            }
-            
-            if (buyPrice <= 0 || sellPrice <= 0) {
-                showError('Fiyatlar pozitif olmalıdır.');
-                return;
-            }
-            
-            const buyData = findDataByDate(buyDate);
-            const sellData = findDataByDate(sellDate);
-            
-            if (!buyData || !sellData) {
-                showError('Seçilen tarihler için veri bulunamadı.');
-                return;
-            }
-            
-            // Tarih kontrolü
-            const buyYear = parseInt(buyDate.split('-')[0]);
-            const buyMonth = parseInt(buyDate.split('-')[1]);
-            const sellYear = parseInt(sellDate.split('-')[0]);
-            const sellMonth = parseInt(sellDate.split('-')[1]);
-            
-            if (sellYear < buyYear || (sellYear === buyYear && sellMonth <= buyMonth)) {
-                showError('Satış tarihi alım tarihinden sonra olmalıdır.');
-                return;
-            }
-            
-            // Hesaplamalar
-            const calculations = [];
-            
-            // Nominal TL getirisi
-            calculations.push({
-                criterion: 'Nominal TL Getirisi',
-                icon: '🏷️',
-                buyValue: buyPrice,
-                sellValue: sellPrice,
-                difference: sellPrice - buyPrice,
-                returnRate: ((sellPrice - buyPrice) / buyPrice) * 100,
-                hasData: true,
-                unit: 'TL'
-            });
-            
-            // Külçe Altın bazlı
-            if (buyData['külçe altın/tl'] && sellData['külçe altın/tl']) {
-                const buyGold = buyPrice / buyData['külçe altın/tl'];
-                const sellGold = sellPrice / sellData['külçe altın/tl'];
-                calculations.push({
-                    criterion: 'Külçe Altın Bazlı',
-                    icon: '🥇',
-                    buyValue: buyGold,
-                    sellValue: sellGold,
-                    difference: sellGold - buyGold,
-                    returnRate: ((sellGold - buyGold) / buyGold) * 100,
-                    hasData: true,
-                    unit: 'gram'
-                });
-            }
-            
-            // USD bazlı
-            if (buyData['usd/tl'] && sellData['usd/tl']) {
-                const buyUSD = buyPrice / buyData['usd/tl'];
-                const sellUSD = sellPrice / sellData['usd/tl'];
-                calculations.push({
-                    criterion: 'USD Bazlı',
-                    icon: '💵',
-                    buyValue: buyUSD,
-                    sellValue: sellUSD,
-                    difference: sellUSD - buyUSD,
-                    returnRate: ((sellUSD - buyUSD) / buyUSD) * 100,
-                    hasData: true,
-                    unit: 'USD'
-                });
-            }
-            
-            // EUR bazlı
-            if (buyData['euro/tl'] && sellData['euro/tl']) {
-                const buyEUR = buyPrice / buyData['euro/tl'];
-                const sellEUR = sellPrice / sellData['euro/tl'];
-                calculations.push({
-                    criterion: 'EUR Bazlı',
-                    icon: '💶',
-                    buyValue: buyEUR,
-                    sellValue: sellEUR,
-                    difference: sellEUR - buyEUR,
-                    returnRate: ((sellEUR - buyEUR) / buyEUR) * 100,
-                    hasData: true,
-                    unit: 'EUR'
-                });
-            }
-            
-            // TÜFE bazlı reel değer
-            if (buyData['Tüfe'] && sellData['Tüfe']) {
-                const realSellPrice = (sellPrice / sellData['Tüfe']) * 100;
-                const realBuyPrice = (buyPrice / buyData['Tüfe']) * 100;
-                calculations.push({
-                    criterion: 'TÜFE Bazlı Reel TL',
-                    icon: '📊',
-                    buyValue: realBuyPrice,
-                    sellValue: realSellPrice,
-                    difference: realSellPrice - realBuyPrice,
-                    returnRate: ((realSellPrice - realBuyPrice) / realBuyPrice) * 100,
-                    hasData: true,
-                    unit: 'Reel TL'
-                });
-            }
-            
-            // Konut Endeksi Türkiye
-            if (buyData['Konut endeks türkiye'] && sellData['Konut endeks türkiye']) {
-                const buyHouseIndex = buyPrice / buyData['Konut endeks türkiye'];
-                const sellHouseIndex = sellPrice / sellData['Konut endeks türkiye'];
-                calculations.push({
-                    criterion: 'Konut Endeksi (Türkiye)',
-                    icon: '🏠',
-                    buyValue: buyHouseIndex,
-                    sellValue: sellHouseIndex,
-                    difference: sellHouseIndex - buyHouseIndex,
-                    returnRate: ((sellHouseIndex - buyHouseIndex) / buyHouseIndex) * 100,
-                    hasData: true,
-                    unit: 'Endeks Birimi'
-                });
-            }
-            
-            // Konut Endeksi Balıkesir
-            if (buyData['Konut endeks balıkesir'] && sellData['Konut endeks balıkesir']) {
-                const buyHouseIndex = buyPrice / buyData['Konut endeks balıkesir'];
-                const sellHouseIndex = sellPrice / sellData['Konut endeks balıkesir'];
-                calculations.push({
-                    criterion: 'Konut Endeksi (Balıkesir)',
-                    icon: '🏘️',
-                    buyValue: buyHouseIndex,
-                    sellValue: sellHouseIndex,
-                    difference: sellHouseIndex - buyHouseIndex,
-                    returnRate: ((sellHouseIndex - buyHouseIndex) / buyHouseIndex) * 100,
-                    hasData: true,
-                    unit: 'Endeks Birimi'
-                });
-            }
-            
-            // BIST 100 bazlı
-            if (buyData['bist'] && sellData['bist']) {
-                const buyBIST = buyPrice / buyData['bist'];
-                const sellBIST = sellPrice / sellData['bist'];
-                calculations.push({
-                    criterion: 'BIST 100 Bazlı',
-                    icon: '📈',
-                    buyValue: buyBIST,
-                    sellValue: sellBIST,
-                    difference: sellBIST - buyBIST,
-                    returnRate: ((sellBIST - buyBIST) / buyBIST) * 100,
-                    hasData: true,
-                    unit: 'Borsa Birimi'
-                });
-            }
-            
-            // Sonuçları getiri oranına göre sırala (en yüksekten en düşüğe)
-            calculations.sort((a, b) => b.returnRate - a.returnRate);
-            
-            displayCards(calculations);
-            createChart(calculations);
-            
-            // Sonuçları göster
-            document.getElementById('results').style.display = 'block';
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function displayCards(calculations) {
-            const container = document.getElementById('cardsContainer');
-            container.innerHTML = '';
-            
-            calculations.forEach((calc, index) => {
-                const card = document.createElement('div');
-                
-                if (!calc.hasData) {
-                    card.className = 'result-card no-data-card';
-                    card.innerHTML = `
-                        <div class="card-header">
-                            <div class="card-icon">${calc.icon}</div>
-                            <div class="card-title">${calc.criterion}</div>
-                        </div>
-                        <div class="no-data-text">Bu tarih aralığı için veri bulunamadı</div>
-                    `;
-                } else {
-                    card.className = 'result-card';
                     
-                    // Ranking belirle
-                    let rankBadge = '';
-                    if (index === 0 && calc.returnRate > 0) rankBadge = '🥇';
-                    else if (index === 1 && calc.returnRate > 0) rankBadge = '🥈';
-                    else if (index === 2 && calc.returnRate > 0) rankBadge = '🥉';
-                    else if (index === calculations.length - 1 && calc.returnRate < 0) rankBadge = '⚠️';
-                    
-                    const returnClass = calc.returnRate >= 0 ? 'positive' : 'negative';
-                    const returnSymbol = calc.returnRate >= 0 ? '+' : '';
-                    
-                    card.innerHTML = `
-                        ${rankBadge ? `<div class="rank-badge">${rankBadge}</div>` : ''}
-                        <div class="card-header">
-                            <div class="card-icon">${calc.icon}</div>
-                            <div class="card-title">${calc.criterion}</div>
-                        </div>
-                        <div class="card-content">
-                            <div class="metric-row">
-                                <span class="metric-label">Alım Değeri:</span>
-                                <span class="metric-value">${calc.buyValue.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${calc.unit}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Satış Değeri:</span>
-                                <span class="metric-value">${calc.sellValue.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${calc.unit}</span>
-                            </div>
-                            <div class="metric-row">
-                                <span class="metric-label">Kazanç/Kayıp:</span>
-                                <span class="metric-value ${returnClass}">${returnSymbol}${calc.difference.toLocaleString('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${calc.unit}</span>
-                            </div>
-                            <div class="return-rate ${returnClass}">
-                                ${returnSymbol}${calc.returnRate.toFixed(2)}%
-                            </div>
-                        </div>
-                    `;
-                }
-                
-                container.appendChild(card);
-            });
-        }
-        
-        let returnsChart;
-        
-        function createChart(calculations) {
-            // Nominal TL hariç diğer hesaplamaları grafikte göster
-            const validCalculations = calculations.filter(calc => calc.hasData && calc.criterion !== 'Nominal TL Getirisi');
-            
-            const returnsCtx = document.getElementById('returnsChart').getContext('2d');
-            
-            if (returnsChart) {
-                returnsChart.destroy();
-            }
-            
-            const labels = validCalculations.map(c => c.criterion);
-            const returns = validCalculations.map(c => c.returnRate);
-            
-            // Zıt renkler kullan - pozitif için açık yeşil, negatif için açık kırmızı
-            const colors = returns.map(r => r >= 0 ? 'rgba(46, 204, 113, 0.8)' : 'rgba(231, 76, 60, 0.8)');
-            const borderColors = returns.map(r => r >= 0 ? 'rgba(46, 204, 113, 1)' : 'rgba(231, 76, 60, 1)');
-            
-            returnsChart = new Chart(returnsCtx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Getiri Oranı (%)',
-                        data: returns,
-                        backgroundColor: colors,
-                        borderColor: borderColors,
-                        borderWidth: 3,
-                        borderRadius: 12,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            titleFont: {
-                                size: 16,
-                                weight: 'bold'
-                            },
-                            bodyFont: {
-                                size: 15,
-                                weight: 'bold'
-                            },
-                            callbacks: {
-                                label: function(context) {
-                                    return `Getiri: ${context.parsed.y.toFixed(2)}%`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                font: {
-                                    size: 14,
-                                    weight: 'bold'
-                                },
-                                callback: function(value) {
-                                    return value + '%';
-                                }
-                            },
-                            grid: {
-                                color: 'rgba(0,0,0,0.1)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                font: {
-                                    size: 13,
-                                    weight: 'bold'
-                                },
-                                maxRotation: 45,
-                                minRotation: 0
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
+                    displayResults(data, alisFiyati, satisFiyati);
+
+                } catch (error) {
+                    console.error('API çağrısı sırasında bir hata oluştu:', error);
+                    if (error.name === 'AbortError') {
+                        resultsContainer.innerHTML = `<p class="zarar">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</p>`;
+                    } else {
+                        resultsContainer.innerHTML = `<p class="zarar">Veriler alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>`;
                     }
+                } finally {
+                    loader.classList.add('hidden');
+                    analyzeButton.disabled = false;
+                    analyzeButton.textContent = 'Analiz Et';
                 }
-            });
-            
-            // Chart container yüksekliğini ayarla
-            document.getElementById('returnsChart').style.height = '400px';
-        }
-        
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            const buyDate = document.getElementById('buyDate').value;
-            const sellDate = document.getElementById('sellDate').value;
-            const buyPrice = document.getElementById('buyPrice').value;
-            const sellPrice = document.getElementById('sellPrice').value;
-            
-            // Başlık
-            doc.setFontSize(20);
-            doc.text('ARSARAZI Yatırım Analiz Raporu', 20, 30);
-            
-            // Tarih bilgileri
-            doc.setFontSize(12);
-            doc.text(`Alım Tarihi: ${buyDate}`, 20, 50);
-            doc.text(`Satış Tarihi: ${sellDate}`, 20, 60);
-            doc.text(`Alım Fiyatı: ${parseInt(buyPrice).toLocaleString('tr-TR')} TL`, 20, 70);
-            doc.text(`Satış Fiyatı: ${parseInt(sellPrice).toLocaleString('tr-TR')} TL`, 20, 80);
-            
-            // Sonuçlar
-            doc.text('Analiz Sonuçları:', 20, 100);
-            
-            let y = 120;
-            const cards = document.querySelectorAll('.result-card:not(.no-data-card)');
-            
-            cards.forEach(card => {
-                const title = card.querySelector('.card-title').textContent;
-                const returnRate = card.querySelector('.return-rate').textContent;
-                
-                doc.text(`${title}: ${returnRate}`, 20, y);
-                y += 10;
-                
-                if (y > 260) {
-                    doc.addPage();
-                    y = 30;
+            }
+
+            function displayResults(data, alisFiyati, satisFiyati) {
+                resultsContainer.innerHTML = '';
+
+                if (!data.alis_verileri || !data.satis_verileri) {
+                     resultsContainer.innerHTML = `<p class="zarar">API'den eksik veri geldi. Seçtiğiniz tarihler için veri bulunamıyor olabilir.</p>`;
+                     return;
                 }
-            });
-            
-            doc.save('arsarazi-analiz-raporu.pdf');
-        }
-        
-        function exportToExcel() {
-            let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "Kriter,Alım Değeri,Satış Değeri,Fark,Getiri (%)\n";
-            
-            const cards = document.querySelectorAll('.result-card:not(.no-data-card)');
-            
-            cards.forEach(card => {
-                const title = card.querySelector('.card-title').textContent;
-                const metrics = card.querySelectorAll('.metric-value');
-                const returnRate = card.querySelector('.return-rate').textContent;
-                
-                const rowData = [
-                    `"${title}"`,
-                    `"${metrics[0].textContent}"`,
-                    `"${metrics[1].textContent}"`,
-                    `"${metrics[2].textContent}"`,
-                    `"${returnRate}"`
+
+                const assets = [
+                    { key: 'Altın Ortalama', name: 'Altın', unit: 'gr Altın' },
+                    { key: 'usd/tl', name: 'ABD Doları', unit: 'USD' },
+                    { key: 'euro/tl', name: 'Euro', unit: 'EUR' },
+                    { key: 'bist', name: 'BIST 100 Endeksi', unit: 'Puan' },
+                    { key: 'gyo endeks', name: 'GYO Endeksi', unit: 'Puan' },
+                    { key: 'TÜFE ENDEKS', name: 'Enflasyon (TÜFE)', unit: 'TL (Enflasyona Göre)' }
                 ];
-                csvContent += rowData.join(",") + "\n";
-            });
-            
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "arsarazi-analiz-raporu.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-        
-        // Sayfa yüklendiğinde
-        window.onload = function() {
-            parseCSV();
-            populateDateSelects();
+
+                const fragment = document.createDocumentFragment();
+
+                assets.forEach(asset => {
+                    const alisKuru = data.alis_verileri[asset.key];
+                    const satisKuru = data.satis_verileri[asset.key];
+
+                    if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
+                        return;
+                    }
+
+                    let alisDegeri, satisDegeri;
+
+                    if (asset.key === 'TÜFE ENDEKS') {
+                        alisDegeri = alisFiyati;
+                        satisDegeri = satisFiyati * (alisKuru / satisKuru);
+                    } else {
+                        alisDegeri = alisFiyati / alisKuru;
+                        satisDegeri = satisFiyati / satisKuru;
+                    }
+
+                    const karZarar = satisDegeri - alisDegeri;
+                    const karZararClass = karZarar >= 0 ? 'kar' : 'zarar';
+                    const karZararPrefix = karZarar >= 0 ? '+' : '';
+
+                    const yuzdelikDegisim = ((satisDegeri - alisDegeri) / alisDegeri) * 100;
+                    const yuzdelikPrefix = yuzdelikDegisim >= 0 ? '+' : '';
+                    const yuzdelikClass = yuzdelikDegisim >= 0 ? 'kar' : 'zarar';
+
+                    const cardDiv = document.createElement('div');
+                    cardDiv.className = 'card';
+                    cardDiv.innerHTML = `
+                        <h3>${asset.name} Karşılığı Performans</h3>
+                        <p>Alış Değeri: <strong>${formatNumber(alisDegeri, asset.key)} ${asset.unit}</strong></p>
+                        <p>Satış Değeri: <strong>${formatNumber(satisDegeri, asset.key)} ${asset.unit}</strong></p>
+                        <p class="${karZararClass}">
+                            ${karZarar >= 0 ? 'Kâr' : 'Zarar'}: <strong>${karZararPrefix}${formatNumber(karZarar, asset.key)} ${asset.unit}</strong>
+                        </p>
+                        <div class="percentage ${yuzdelikClass}">
+                            ${yuzdelikPrefix}${yuzdelikDegisim.toFixed(2)}% ${yuzdelikDegisim >= 0 ? 'Kazanç' : 'Kayıp'}
+                        </div>
+                    `;
+                    fragment.appendChild(cardDiv);
+                });
+
+                resultsContainer.appendChild(fragment);
+            }
+
+            function formatDateForAPI(dateString) {
+                const [year, month, day] = dateString.split('-');
+                return `${day}.${month}.${year}`;
+            }
+
+            function formatNumber(number, key) {
+                const options = {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                };
+                if (key === 'TÜFE ENDEKS') {
+                    return number.toLocaleString('tr-TR', options);
+                }
+                return number.toLocaleString('tr-TR', options);
+            }
+        });
+    </script>
+
+    <!-- Optimized PWA setup with better error handling -->
+    <script>
+        // 1. Manifest dosyasını dinamik olarak oluştur ve bağla
+        const manifest = {
+          "short_name": "Reel Getiri",
+          "name": "Reel Getiri Analiz Platformu",
+          "start_url": ".",
+          "display": "standalone",
+          "theme_color": "#007bff",
+          "background_color": "#f8f9fa",
+          "description": "Gayrimenkul yatırımlarınızın reel getirisini analiz eden PWA."
         };
+        
+        try {
+            const manifestString = JSON.stringify(manifest);
+            const manifestBlob = new Blob([manifestString], {type: 'application/json'});
+            const manifestUrl = URL.createObjectURL(manifestBlob);
+            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
+        } catch (error) {
+            console.warn('Manifest oluşturulamadı:', error);
+        }
+
+        // 2. Service Worker'ı kaydet
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'reel-getiri-analiz-v2';
+                const urlsToCache = ['/'];
+
+                self.addEventListener('install', event => {
+                  event.waitUntil(
+                    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+                  );
+                });
+
+                self.addEventListener('fetch', event => {
+                  event.respondWith(
+                    caches.match(event.request).then(response => {
+                      return response || fetch(event.request);
+                    })
+                  );
+                });
+
+                self.addEventListener('activate', event => {
+                    const cacheWhitelist = [CACHE_NAME];
+                    event.waitUntil(
+                        caches.keys().then(cacheNames => {
+                            return Promise.all(
+                                cacheNames.map(cacheName => {
+                                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                        return caches.delete(cacheName);
+                                    }
+                                })
+                            );
+                        })
+                    );
+                });
+            `;
+            
+            try {
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register(swUrl)
+                        .then(registration => {
+                            console.log('ServiceWorker kaydı başarılı: ', registration.scope);
+                        })
+                        .catch(error => {
+                            console.log('ServiceWorker kaydı başarısız: ', error);
+                        });
+                });
+            } catch (error) {
+                console.warn('Service Worker oluşturulamadı:', error);
+            }
+        }
     </script>
 </body>
 </html>
