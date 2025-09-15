@@ -8,10 +8,19 @@
     <!-- PWA Manifest Verisi (Gömülü) -->
     <link rel="manifest" id="manifest-link">
     
+    <!-- Favicon ve PWA İkonları -->
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTYiIGZpbGw9IiMxNTgwM2QiLz4KPHBhdGggZD0iTTE2IDhMMjAgMTZIMTZWMjRIMTJWMTZIOEwxNiA4WiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4K">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iOCIgY3k9IjgiIHI9IjgiIGZpbGw9IiMxNTgwM2QiLz4KPHBhdGggZD0iTTggNEwxMCA4SDhWMTJINlY4SDZMNCA4TDggNFoiIGZpbGw9IiNmZmZmZmYiLz4KPC9zdmc+Cg==">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjkwIiBjeT0iOTAiIHI9IjkwIiBmaWxsPSIjMTU4MDNkIi8+CjxwYXRoIGQ9Ik05MCA0NUwxMTIuNSA5MEg5MFYxMzVINzVWOTBINzUuNUw2Ny41IDkwTDkwIDQ1WiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4K">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUyIiBoZWlnaHQ9IjE1MiIgdmlld0JveD0iMCAwIDE1MiAxNTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9Ijc2IiBjeT0iNzYiIHI9Ijc2IiBmaWxsPSIjMTU4MDNkIi8+CjxwYXRoIGQ9Ik03NiAzOEw5NS4yNSA3Nkg3NlYxMTRINjMuNVY3Nkg2My41TDYzLjUgNzZMNjMuNSA3Nkw3NiAzOFoiIGZpbGw9IiNmZmZmZmYiLz4KPC9zdmc+Cg==">
+    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjYwIiBjeT0iNjAiIHI9IjYwIiBmaWxsPSIjMTU4MDNkIi8+CjxwYXRoIGQ9Ik02MCAzMEw3NSA2MEg2MFY5MEg1MFY2MEg1MEw1MCA2MEw2MCAzMFoiIGZpbGw9IiNmZmZmZmYiLz4KPC9zdmc+Cg==">
+    <link rel="apple-touch-icon" sizes="76x76" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzYiIGhlaWdodD0iNzYiIHZpZXdCb3g9IjAgMCA3NiA3NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzgiIGN5PSIzOCIgcj0iMzgiIGZpbGw9IiMxNTgwM2QiLz4KPHBhdGggZD0iTTM4IDE5TDQ3LjUgMzhIMzhWNTdIMzEuNVYzOEgzMS41TDMxLjUgMzhIMzggMTlaIiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=">
+    
     <!-- Tema Rengi -->
     <meta name="theme-color" content="#15803d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Reel Getiri">
 
     <!-- Removed duplicate Google Fonts import and optimized font loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -677,7 +686,21 @@
           "display": "standalone",
           "theme_color": "#15803d",
           "background_color": "#ffffff",
-          "description": "Gayrimenkul yatırımlarınızın reel getirisini analiz eden PWA."
+          "description": "Gayrimenkul yatırımlarınızın reel getirisini analiz eden PWA.",
+          "icons": [
+            {
+              "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9Ijk2IiBmaWxsPSIjMTU4MDNkIi8+CjxwYXRoIGQ9Ik05NiA0OEwxMjAgOTZIOThWMTQ0SDg0Vjk2SDg0TDg0IDk2TDk2IDQ4WiIgZmlsbD0iI2ZmZmZmZiIvPgo8L3N2Zz4K",
+              "sizes": "192x192",
+              "type": "image/svg+xml",
+              "purpose": "any maskable"
+            },
+            {
+              "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMjU2IiBmaWxsPSIjMTU4MDNkIi8+CjxwYXRoIGQ9Ik0yNTYgMTI4TDMyMCAyNTZIMjU2VjM4NEgxOTJWMjU2SDE5MkwxOTIgMjU2TDI1NiAxMjhaIiBmaWxsPSIjZmZmZmZmIi8+Cjwvc3ZnPgo=",
+              "sizes": "512x512",
+              "type": "image/svg+xml",
+              "purpose": "any maskable"
+            }
+          ]
         };
         
         try {
