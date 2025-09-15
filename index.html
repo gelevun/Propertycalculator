@@ -861,6 +861,30 @@
             return;
           }
 
+          // Nominal kar hesaplama
+          const nominalKar = satisFiyati - alisFiyati;
+          const nominalKarYuzde = ((satisFiyati - alisFiyati) / alisFiyati) * 100;
+          const nominalKarClass = nominalKar >= 0 ? 'positive' : 'negative';
+          const nominalKarPrefix = nominalKar >= 0 ? '+' : '';
+
+          // Nominal kar kartını oluştur
+          const nominalKarCard = document.createElement('div');
+          nominalKarCard.className = 'result-card';
+          nominalKarCard.style.border = '2px solid var(--neon-green)';
+          nominalKarCard.style.background = 'linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%)';
+          nominalKarCard.innerHTML = `
+            <h3>💰 Nominal Kar/Zarar (TL)</h3>
+            <p>Alış Fiyatı: <strong>${formatNumber(alisFiyati, 'TL')} TL</strong></p>
+            <p>Satış Fiyatı: <strong>${formatNumber(satisFiyati, 'TL')} TL</strong></p>
+            <p class="${nominalKar >= 0 ? 'text-success' : 'text-error'}">
+                ${nominalKar >= 0 ? 'Nominal Kâr' : 'Nominal Zarar'}: <strong>${nominalKarPrefix}${formatNumber(nominalKar, 'TL')} TL</strong>
+            </p>
+            <div class="performance-badge ${nominalKarClass}">
+                ${nominalKarPrefix}${nominalKarYuzde.toFixed(2)}% ${nominalKar >= 0 ? 'Kazanç' : 'Kayıp'}
+            </div>
+          `;
+          resultsContainer.appendChild(nominalKarCard);
+
           const assets = [
             { key: 'Altın Ortalama', name: 'Altın', unit: 'gr Altın' },
             { key: 'usd/tl', name: 'ABD Doları', unit: 'USD' },
