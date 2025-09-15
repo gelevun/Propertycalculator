@@ -1,720 +1,1018 @@
+
 <!DOCTYPE html>
-<html lang="tr">
-<head>
+<html lang="tr" data-theme="dark" style=""><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reel Getiri Analiz Platformu</title>
-    
-    <!-- PWA Manifest Verisi (Gömülü) -->
-    <link rel="manifest" id="manifest-link">
-    
-    <!-- Favicon ve PWA İkonları -->
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDRMMjggMTZIMjBWMjBIMTJWMTZIMTZMMTYgNFoiIGZpbGw9IiMxNTgwM2QiLz4KPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iNCIgZmlsbD0iIzE1Njc5ZSIvPgo8cGF0aCBkPSJNMjAgMTZIMjRWMjBIMjBWMTZaIiBmaWxsPSIjZjU5ZTBhIi8+CjxwYXRoIGQ9Ik0xNiAyMEgyMFYyNEgxNlYyMFoiIGZpbGw9IiMxNTY3OWUiLz4KPC9zdmc+Cg==">
-    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgdmlld0JveD0iMCAwIDE4MCAxODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik05MCAyMkwxMzUgOTBIMTEyLjVWMTEyLjVINjcuNVY5MEg5MEw5MCAyMloiIGZpbGw9IiMxNTgwM2QiLz4KPGNpcmNsZSBjeD0iOTAiIGN5PSI5MCIgcj0iMjIiIGZpbGw9IiMxNTY3OWUiLz4KPHBhdGggZD0iTTExMi41IDkwSDEzNVYxMTIuNUgxMTIuNVY5MFoiIGZpbGw9IiNmNTllMGEiLz4KPHBhdGggZD0iTTkwIDExMi41SDExMi41VjEzNUg5MFYxMTIuNVoiIGZpbGw9IiMxNTY3OWUiLz4KPC9zdmc+Cg==">
-    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUyIiBoZWlnaHQ9IjE1MiIgdmlld0JveD0iMCAwIDE1MiAxNTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik03NiAxOUwxMTUgNzZIOGNWOTVINjMuNVY3Nkg3Nkw3NiAxOVoiIGZpbGw9IiMxNTgwM2QiLz4KPGNpcmNsZSBjeD0iNzYiIGN5PSI3NiIgcj0iMTkiIGZpbGw9IiMxNTY3OWUiLz4KPHBhdGggZD0iTTk1IDc2SDEwN1Y5NUg5NVY3NloiIGZpbGw9IiNmNTllMGEiLz4KPHBhdGggZD0iTTc2IDk1SDk1VjEwN0g3NlY5NVoiIGZpbGw9IiMxNTY3OWUiLz4KPC9zdmc+Cg==">
-    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik02MCAxNUw5MCA2MEg3NVY3NUg0NVY2MEg2MEw2MCAxNVoiIGZpbGw9IiMxNTgwM2QiLz4KPGNpcmNsZSBjeD0iNjAiIGN5PSI2MCIgcj0iMTUiIGZpbGw9IiMxNTY3OWUiLz4KPHBhdGggZD0iTTc1IDYwSDg1Vjc1SDc1VjYwWiIgZmlsbD0iI2Y1OWUwYSIvPgo8cGF0aCBkPSJNNjAgNzVINzVWODVINjBWNzVaIiBmaWxsPSIjMTU2Nzk1Ii8+Cjwvc3ZnPgo=">
-    <link rel="apple-touch-icon" sizes="76x76" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzYiIGhlaWdodD0iNzYiIHZpZXdCb3g9IjAgMCA3NiA3NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTM4IDEwTDQ3IDM4SDQwVjQwSDM2VjM4SDM4TDM4IDEwWiIgZmlsbD0iIzE1ODAzZCIvPgo8Y2lyY2xlIGN4PSIzOCIgY3k9IjM4IiByPSI5IiBmaWxsPSIjMTU2Nzk1Ii8+CjxwYXRoIGQ9Ik00MCAzOEg0NFY0MEg0MFYzOFoiIGZpbGw9IiNmNTllMGEiLz4KPHBhdGggZD0iTTM4IDQwSDQwVjQySDM4VjQwWiIgZmlsbD0iIzE1Njc5NSIvPgo8L3N2Zz4K">
-    
-    <!-- Tema Rengi -->
-    <meta name="theme-color" content="#15803d">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" id="manifest-link" href="blob:https://www.genspark.ai/17e6258a-6c02-43f3-a7db-7de98243dde2">
+
+    <!-- Theme -->
+    <meta name="theme-color" content="#00ff88">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Reel Getiri">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <!-- Removed duplicate Google Fonts import and optimized font loading -->
+    <!-- Modern Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Stil Dosyası (Gömülü) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
+
     <style>
-        /* Removed duplicate @import for Google Fonts to improve loading speed */
-        
-        /* Temel Sıfırlama ve Ayarlar */
-        :root {
-            /* Design tokens based on modern minimalist approach */
-            --background: #ffffff;
-            --foreground: #374151;
-            --card: #f0fdf4;
-            --card-foreground: #374151;
-            --primary: #15803d;
-            --primary-foreground: #ffffff;
-            --secondary: #84cc16;
-            --secondary-foreground: #ffffff;
-            --muted: #f0fdf4;
-            --muted-foreground: #6b7280;
-            --accent: #84cc16;
-            --accent-foreground: #ffffff;
-            --destructive: #dc2626;
-            --destructive-foreground: #ffffff;
-            --border: #e5e7eb;
-            --input: #f9fafb;
-            --ring: rgba(21, 128, 61, 0.2);
-            --success: #16a34a;
-            --warning: #d97706;
-            --radius: 0.75rem;
-            
-            /* Enhanced shadows for depth */
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
+      :root {
+        /* Ultra Modern Color Palette */
+        --bg-primary: #0a0a0a;
+        --bg-secondary: #111111;
+        --bg-card: rgba(255, 255, 255, 0.03);
+        --bg-glass: rgba(255, 255, 255, 0.05);
+        --text-primary: #ffffff;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        /* Neon Colors */
+        --neon-green: #00ff88;
+        --neon-blue: #00d4ff;
+        --neon-purple: #8b5cf6;
+        --neon-pink: #f472b6;
+        --neon-orange: #fb923c;
 
-        body {
-            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--background) 0%, #f8fafc 100%);
-            color: var(--foreground);
-            line-height: 1.6;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
+        /* Gradients */
+        --gradient-primary: linear-gradient(135deg, var(--neon-green) 0%, var(--neon-blue) 100%);
+        --gradient-secondary: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-pink) 100%);
+        --gradient-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
 
-        /* Ana Konteyner */
+        /* Light Theme */
+        --bg-primary-light: #ffffff;
+        --bg-secondary-light: #f8fafc;
+        --bg-card-light: rgba(0, 0, 0, 0.02);
+        --bg-glass-light: rgba(0, 0, 0, 0.03);
+        --text-primary-light: #0f172a;
+        --text-secondary-light: #475569;
+        --text-muted-light: #64748b;
+
+        /* Spacing */
+        --space-xs: 0.5rem;
+        --space-sm: 1rem;
+        --space-md: 1.5rem;
+        --space-lg: 2rem;
+        --space-xl: 3rem;
+        --space-2xl: 4rem;
+        --space-3xl: 6rem;
+
+        /* Border Radius */
+        --radius-sm: 0.5rem;
+        --radius-md: 1rem;
+        --radius-lg: 1.5rem;
+        --radius-xl: 2rem;
+
+        /* Shadows */
+        --shadow-glow: 0 0 20px rgba(0, 255, 136, 0.3);
+        --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
+        --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      [data-theme='light'] {
+        --bg-primary: var(--bg-primary-light);
+        --bg-secondary: var(--bg-secondary-light);
+        --bg-card: var(--bg-card-light);
+        --bg-glass: var(--bg-glass-light);
+        --text-primary: var(--text-primary-light);
+        --text-secondary: var(--text-secondary-light);
+        --text-muted: var(--text-muted-light);
+        --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          'Inter',
+          -apple-system,
+          BlinkMacSystemFont,
+          system-ui,
+          sans-serif;
+        background: var(--gradient-bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      [data-theme='light'] body {
+        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
+      }
+
+      /* Animated Background */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+          radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+          radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+        animation: backgroundFlow 20s ease-in-out infinite;
+        z-index: -1;
+      }
+
+      @keyframes backgroundFlow {
+        0%,
+        100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      /* Theme Toggle */
+      .theme-toggle {
+        position: fixed;
+        top: 2rem;
+        right: 2rem;
+        z-index: 1000;
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-md);
+        padding: 0.75rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--text-primary);
+        font-size: 1.25rem;
+      }
+
+      .theme-toggle:hover {
+        background: var(--bg-card);
+        transform: scale(1.05);
+      }
+
+      /* Main Container */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: var(--space-lg);
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Hero Section */
+      .hero {
+        text-align: center;
+        padding: var(--space-3xl) 0;
+        margin-bottom: var(--space-2xl);
+      }
+
+      .hero h1 {
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 900;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: var(--space-md);
+        letter-spacing: -0.02em;
+        line-height: 0.9;
+      }
+
+      .hero .subtitle {
+        font-size: clamp(1.25rem, 3vw, 1.75rem);
+        color: var(--text-secondary);
+        font-weight: 400;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.4;
+      }
+
+      /* Glass Card */
+      .glass-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-xl);
+        padding: var(--space-2xl);
+        margin-bottom: var(--space-lg);
+        box-shadow: var(--shadow-glass);
+        position: relative;
+        overflow: hidden;
+      }
+
+      [data-theme='light'] .glass-card {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: var(--gradient-primary);
+      }
+
+      /* Form Styling */
+      .form-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--space-lg);
+        margin-bottom: var(--space-xl);
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-sm);
+      }
+
+      .form-group label {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: var(--space-xs);
+      }
+
+      .form-group input {
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-card);
+        border: 2px solid transparent;
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
+        font-size: 1.125rem;
+        font-weight: 500;
+        font-family: 'JetBrains Mono', monospace;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+      }
+
+      .form-group input:focus {
+        outline: none;
+        border-color: var(--neon-green);
+        box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.1);
+        background: var(--bg-glass);
+      }
+
+      .form-group input::placeholder {
+        color: var(--text-muted);
+      }
+
+      /* Modern Button */
+      .btn-primary {
+        grid-column: 1 / -1;
+        padding: 1.5rem 3rem;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 1.25rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-glow);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      /* Loading Animation */
+      .loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-2xl);
+        gap: var(--space-md);
+        color: var(--text-secondary);
+      }
+
+      .loader.hidden {
+        display: none;
+      }
+
+      .spinner {
+        width: 3rem;
+        height: 3rem;
+        border: 3px solid var(--bg-card);
+        border-top: 3px solid var(--neon-green);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      .loader span {
+        font-size: 1.125rem;
+        font-weight: 500;
+      }
+
+      /* Notification */
+      .notification {
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid var(--neon-green);
+        border-radius: var(--radius-md);
+        padding: var(--space-md);
+        margin: var(--space-lg) 0;
+        color: var(--neon-green);
+        font-weight: 500;
+        display: none;
+      }
+
+      /* Results Grid */
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: var(--space-lg);
+        margin-top: var(--space-xl);
+      }
+
+      /* Result Cards */
+      .result-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      [data-theme='light'] .result-card {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .result-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-card);
+      }
+
+      .result-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--gradient-primary);
+      }
+
+      .result-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: var(--space-md);
+        line-height: 1.2;
+      }
+
+      .result-card p {
+        color: var(--text-secondary);
+        margin-bottom: var(--space-sm);
+        font-size: 1rem;
+        line-height: 1.5;
+      }
+
+      .result-card p strong {
+        color: var(--text-primary);
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.1em;
+      }
+
+      /* Performance Indicators */
+      .performance-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        padding: var(--space-md) var(--space-lg);
+        border-radius: var(--radius-md);
+        font-weight: 700;
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: var(--space-md);
+        width: 100%;
+        justify-content: center;
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      .performance-badge.positive {
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
+        border: 2px solid var(--neon-green);
+        color: var(--neon-green);
+      }
+
+      .performance-badge.negative {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+        border: 2px solid #ef4444;
+        color: #ef4444;
+      }
+
+      /* Section Headers */
+      .section-header {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: var(--space-xl);
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        margin: var(--space-xl) 0;
+        position: relative;
+        overflow: hidden;
+      }
+
+      [data-theme='light'] .section-header {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .section-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--gradient-secondary);
+      }
+
+      .section-header h2 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: var(--gradient-secondary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: var(--space-sm);
+      }
+
+      .section-header p {
+        color: var(--text-secondary);
+        font-size: 1.125rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      /* Breakeven Cards */
+      .breakeven-card {
+        background: var(--bg-glass);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-lg);
+        padding: var(--space-xl);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      [data-theme='light'] .breakeven-card {
+        border: 1px solid rgba(0, 0, 0, 0.05);
+      }
+
+      .breakeven-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-card);
+      }
+
+      .breakeven-card.above {
+        border-left: 4px solid var(--neon-green);
+      }
+
+      .breakeven-card.below {
+        border-left: 4px solid var(--neon-orange);
+      }
+
+      .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-xs);
+        padding: var(--space-sm) var(--space-md);
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: var(--space-sm);
+      }
+
+      .status-indicator.positive {
+        background: rgba(0, 255, 136, 0.15);
+        color: var(--neon-green);
+      }
+
+      .status-indicator.warning {
+        background: rgba(251, 146, 60, 0.15);
+        color: var(--neon-orange);
+      }
+
+      .explanation-box {
+        margin-top: var(--space-md);
+        padding: var(--space-md);
+        background: var(--bg-card);
+        border-radius: var(--radius-sm);
+        border-left: 3px solid var(--neon-blue);
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        line-height: 1.6;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
         .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: var(--background);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            border: 1px solid var(--border);
-            overflow: hidden;
+          padding: var(--space-md);
         }
 
-        /* Modern header with gradient background */
-        .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--primary-foreground);
-            padding: 3rem 2rem;
-            text-align: center;
+        .hero {
+          padding: var(--space-xl) 0;
         }
 
-        .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.025em;
+        .glass-card {
+          padding: var(--space-lg);
         }
 
-        .header .subtitle {
-            font-size: 1.125rem;
-            opacity: 0.9;
-            font-weight: 400;
+        .form-container {
+          grid-template-columns: 1fr;
+          gap: var(--space-md);
         }
 
-        /* Modern form design with better spacing */
-        .form-section {
-            padding: 2rem;
+        .results-grid {
+          grid-template-columns: 1fr;
+          gap: var(--space-md);
         }
 
-        #analysis-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.5rem;
+        .theme-toggle {
+          top: 1rem;
+          right: 1rem;
         }
+      }
 
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--foreground);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+      @media (max-width: 480px) {
+        .hero h1 {
+          font-size: 2.5rem;
         }
 
         .form-group input {
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--border);
-            border-radius: calc(var(--radius) - 0.25rem);
-            background: var(--input);
-            font-family: inherit;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+          padding: 1rem;
+          font-size: 1rem;
         }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--ring);
-            background: var(--background);
+        .btn-primary {
+          padding: 1.25rem 2rem;
+          font-size: 1rem;
         }
 
-        /* Modern button design with better states */
-        .submit-button {
-            grid-column: 1 / -1;
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: var(--primary-foreground);
-            border: none;
-            border-radius: calc(var(--radius) - 0.25rem);
-            font-size: 1.125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+        .result-card {
+          padding: var(--space-lg);
         }
+      }
 
-        .submit-button:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-lg);
-        }
+      /* Color utility classes */
+      .text-success {
+        color: var(--neon-green) !important;
+      }
+      .text-error {
+        color: #ef4444 !important;
+      }
+      .text-warning {
+        color: var(--neon-orange) !important;
+      }
+      .text-primary {
+        color: var(--text-primary) !important;
+      }
+      .text-secondary {
+        color: var(--text-secondary) !important;
+      }
 
-        .submit-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
+      /* Animation for cards appearing */
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-        /* Bildirim Alanı */
-        .notification {
-            margin: 1rem 2rem;
-            padding: 1rem;
-            background: var(--muted);
-            border: 1px solid var(--border);
-            border-radius: calc(var(--radius) - 0.25rem);
-            color: var(--muted-foreground);
-            font-size: 0.875rem;
-            display: none;
-        }
+      .result-card {
+        animation: slideUp 0.6s ease-out;
+      }
 
-        /* Yükleme Göstergesi (Spinner) */
-        #loader {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 3rem;
-            gap: 1rem;
-            color: var(--muted-foreground);
-        }
+      .result-card:nth-child(even) {
+        animation-delay: 0.1s;
+      }
 
-        #loader.hidden {
-            display: none;
-        }
-
-        .spinner {
-            width: 2rem;
-            height: 2rem;
-            border: 3px solid var(--border);
-            border-left-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Modern card design with enhanced visual hierarchy */
-        .results-section {
-            padding: 0 2rem 2rem;
-        }
-
-        #results-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            transition: all 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 1rem;
-            line-height: 1.3;
-        }
-
-        .card p {
-            margin-bottom: 0.75rem;
-            color: var(--card-foreground);
-            font-size: 0.9rem;
-        }
-
-        .card p strong {
-            font-weight: 600;
-            color: var(--foreground);
-        }
-
-        /* Enhanced profit/loss styling with modern design */
-        .kar {
-            color: var(--success) !important;
-        }
-
-        .zarar {
-            color: var(--destructive) !important;
-        }
-
-        .percentage {
-            margin-top: 1rem;
-            padding: 0.75rem 1rem;
-            border-radius: calc(var(--radius) - 0.25rem);
-            font-weight: 700;
-            font-size: 1rem;
-            text-align: center;
-            border: 2px solid;
-        }
-
-        .percentage.kar {
-            background: rgba(22, 163, 74, 0.1);
-            border-color: var(--success);
-            color: var(--success);
-        }
-
-        .percentage.zarar {
-            background: rgba(220, 38, 38, 0.1);
-            border-color: var(--destructive);
-            color: var(--destructive);
-        }
-
-        /* Mobil Uyumluluk (Responsive) */
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem 0.5rem;
-            }
-            
-            .header {
-                padding: 2rem 1rem;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .form-section, .results-section {
-                padding: 1.5rem 1rem;
-            }
-            
-            #analysis-form {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            
-            #results-container {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.75rem;
-            }
-            
-            .header .subtitle {
-                font-size: 1rem;
-            }
-        }
+      .result-card:nth-child(odd) {
+        animation-delay: 0.2s;
+      }
     </style>
-</head>
-<body>
-    <main class="container">
-        <!-- New header section with modern design -->
-        <header class="header">
-            <h1>Reel Getiri Analizi</h1>
-            <p class="subtitle">Yatırımınızın enflasyon ve döviz karşısındaki gerçek performansını ölçün</p>
-        </header>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Open%20Sans:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Noto%20Sans%20JP:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&amp;display=swap" rel="stylesheet"></head>
+  <body style="">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
 
-        <!-- Restructured form section -->
-        <section class="form-section">
-            <form id="analysis-form">
-                <div class="form-group">
-                    <label for="alis-tarihi">Alış Tarihi</label>
-                    <input type="date" id="alis-tarihi" required>
-                </div>
-                <div class="form-group">
-                    <label for="alis-fiyati">Alış Fiyatı (TL)</label>
-                    <input type="number" id="alis-fiyati" placeholder="örn: 1.000.000" required>
-                </div>
-                <div class="form-group">
-                    <label for="satis-tarihi">Satış Tarihi</label>
-                    <input type="date" id="satis-tarihi" required>
-                </div>
-                <div class="form-group">
-                    <label for="satis-fiyati">Satış Fiyatı (TL)</label>
-                    <input type="number" id="satis-fiyati" placeholder="örn: 3.000.000" required>
-                </div>
-                <button type="submit" id="analyze-button" class="submit-button">Analiz Et</button>
-            </form>
-        </section>
+    <div class="container">
+      <!-- Hero Section -->
+      <section class="hero">
+        <h1>Reel Getiri Analizi</h1>
+        <p class="subtitle">Yatırımınızın enflasyon ve döviz karşısındaki gerçek performansını ölçün</p>
+      </section>
 
-        <div id="notification-area" class="notification"></div>
-
-        <div id="loader" class="hidden">
-            <div class="spinner"></div>
-            <span>Veriler hesaplanıyor...</span>
-        </div>
-
-        <!-- New results section structure -->
-        <section class="results-section">
-            <div id="results-container">
-                <!-- Analiz sonuçları buraya dinamik olarak eklenecek -->
+      <!-- Input Form -->
+      <div class="glass-card">
+        <form id="analysis-form">
+          <div class="form-container">
+            <div class="form-group">
+              <label for="alis-tarihi">Alış Tarihi</label>
+              <input type="date" id="alis-tarihi" required="" max="2025-09-15">
             </div>
-        </section>
-    </main>
+            <div class="form-group">
+              <label for="alis-fiyati">Alış Fiyatı (TL)</label>
+              <input type="number" id="alis-fiyati" placeholder="1.000.000" required="">
+            </div>
+            <div class="form-group">
+              <label for="satis-tarihi">Satış Tarihi</label>
+              <input type="date" id="satis-tarihi" required="" max="2025-09-15">
+            </div>
+            <div class="form-group">
+              <label for="satis-fiyati">Satış Fiyatı (TL)</label>
+              <input type="number" id="satis-fiyati" placeholder="3.000.000" required="">
+            </div>
+            <button type="submit" id="analyze-button" class="btn-primary">Analiz Et</button>
+          </div>
+        </form>
+      </div>
 
-    <!-- JavaScript Mantığı (Gömülü) -->
+      <!-- Notification Area -->
+      <div id="notification-area" class="notification"></div>
+
+      <!-- Loading Indicator -->
+      <div id="loader" class="loader hidden">
+        <div class="spinner"></div>
+        <span>Veriler hesaplanıyor...</span>
+      </div>
+
+      <!-- Results Section -->
+      <div id="results-container" class="results-grid">
+        <!-- Results will be dynamically inserted here -->
+      </div>
+    </div>
+
+    <!-- JavaScript (Unchanged from original) -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+      // Theme Toggle Function
+      function toggleTheme() {
+        const html = document.documentElement;
+        const currentTheme = html.getAttribute('data-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        html.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+      }
 
-            // Gerekli DOM elemanlarını seçme
-            const form = document.getElementById('analysis-form');
-            const alisTarihiInput = document.getElementById('alis-tarihi');
-            const alisFiyatiInput = document.getElementById('alis-fiyati');
-            const satisTarihiInput = document.getElementById('satis-tarihi');
-            const satisFiyatiInput = document.getElementById('satis-fiyati');
-            const loader = document.getElementById('loader');
-            const resultsContainer = document.getElementById('results-container');
-            const notificationArea = document.getElementById('notification-area');
-            const analyzeButton = document.getElementById('analyze-button');
+      // Load saved theme
+      document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      });
 
-            const apiCache = new Map();
-            const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+      // Original JavaScript functionality (unchanged)
+      document.addEventListener('DOMContentLoaded', () => {
+        // Gerekli DOM elemanlarını seçme
+        const form = document.getElementById('analysis-form');
+        const alisTarihiInput = document.getElementById('alis-tarihi');
+        const alisFiyatiInput = document.getElementById('alis-fiyati');
+        const satisTarihiInput = document.getElementById('satis-tarihi');
+        const satisFiyatiInput = document.getElementById('satis-fiyati');
+        const loader = document.getElementById('loader');
+        const resultsContainer = document.getElementById('results-container');
+        const notificationArea = document.getElementById('notification-area');
+        const analyzeButton = document.getElementById('analyze-button');
 
-            // Tarih inputlarına varsayılan değerler ata ve gelecekteki tarihleri engelle
-            const today = new Date();
-            const todayString = today.toISOString().split('T')[0];
+        const apiCache = new Map();
+        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-            satisTarihiInput.value = todayString;
-            alisTarihiInput.setAttribute('max', todayString);
-            satisTarihiInput.setAttribute('max', todayString);
+        // Tarih inputlarına varsayılan değerler ata ve gelecekteki tarihleri engelle
+        const today = new Date();
+        const todayString = today.toISOString().split('T')[0];
 
-            const oneYearAgo = new Date();
-            oneYearAgo.setFullYear(today.getFullYear() - 1);
-            const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
-            alisTarihiInput.value = oneYearAgoString;
+        satisTarihiInput.value = todayString;
+        alisTarihiInput.setAttribute('max', todayString);
+        satisTarihiInput.setAttribute('max', todayString);
 
-            const API_URL = 'https://script.google.com/macros/s/AKfycbxTWH3iXuFQRUo-ZpXAWy4y5SiPXwytJPDtsKI7LtbmdvhteAUMWRPdFp_IdjC58CGo/exec';
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(today.getFullYear() - 1);
+        const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
+        alisTarihiInput.value = oneYearAgoString;
 
-            // Form gönderildiğinde çalışacak fonksiyon
-            form.addEventListener('submit', (event) => {
-                event.preventDefault();
+        const API_URL =
+          'https://script.google.com/macros/s/AKfycbxTWH3iXuFQRUo-ZpXAWy4y5SiPXwytJPDtsKI7LtbmdvhteAUMWRPdFp_IdjC58CGo/exec';
 
-                // Girdi değerlerini al
-                const alisTarihi = alisTarihiInput.value;
-                const alisFiyati = parseFloat(alisFiyatiInput.value);
-                const satisTarihi = satisTarihiInput.value;
-                const satisFiyati = parseFloat(satisFiyatiInput.value);
+        // Form gönderildiğinde çalışacak fonksiyon
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
 
-                // Girdi doğrulama
-                if (!alisTarihi || !alisFiyati || !satisTarihi || !satisFiyati) {
-                    alert('Lütfen tüm alanları doldurun.');
-                    return;
-                }
+          // Girdi değerlerini al
+          const alisTarihi = alisTarihiInput.value;
+          const alisFiyati = parseFloat(alisFiyatiInput.value);
+          const satisTarihi = satisTarihiInput.value;
+          const satisFiyati = parseFloat(satisFiyatiInput.value);
 
-                if (alisFiyati <= 0 || satisFiyati <= 0) {
-                    alert('Fiyatlar sıfırdan büyük olmalıdır.');
-                    return;
-                }
-                
-                if (new Date(satisTarihi) < new Date(alisTarihi)) {
-                    alert('Satış tarihi, alış tarihinden önce olamaz.');
-                    return;
-                }
+          // Girdi doğrulama
+          if (!alisTarihi || !alisFiyati || !satisTarihi || !satisFiyati) {
+            alert('Lütfen tüm alanları doldurun.');
+            return;
+          }
 
-                // Tarihleri hafta sonu için düzelt
-                notificationArea.style.display = 'none';
-                const adjustedAlisDate = getPreviousWeekday(new Date(alisTarihi + 'T12:00:00Z'));
-                const adjustedSatisDate = getPreviousWeekday(new Date(satisTarihi + 'T12:00:00Z'));
-                
-                const adjustedAlisTarihiString = adjustedAlisDate.toISOString().split('T')[0];
-                const adjustedSatisTarihiString = adjustedSatisDate.toISOString().split('T')[0];
+          if (alisFiyati <= 0 || satisFiyati <= 0) {
+            alert('Fiyatlar sıfırdan büyük olmalıdır.');
+            return;
+          }
 
-                // Eğer tarih değiştiyse kullanıcıyı bilgilendir ve inputları güncelle
-                if (alisTarihi !== adjustedAlisTarihiString || satisTarihi !== adjustedSatisTarihiString) {
-                    notificationArea.textContent = 'Not: Seçtiğiniz tarih hafta sonuna denk geldiği için analiz en yakın iş gününe göre yapılmıştır.';
-                    notificationArea.style.display = 'block';
-                    alisTarihiInput.value = adjustedAlisTarihiString;
-                    satisTarihiInput.value = adjustedSatisTarihiString;
-                }
+          if (new Date(satisTarihi) < new Date(alisTarihi)) {
+            alert('Satış tarihi, alış tarihinden önce olamaz.');
+            return;
+          }
 
-                // API'ye istek gönderme
-                fetchDataAndAnalyze(adjustedAlisTarihiString, alisFiyati, adjustedSatisTarihiString, satisFiyati);
+          // Tarihleri hafta sonu için düzelt
+          notificationArea.style.display = 'none';
+          const adjustedAlisDate = getPreviousWeekday(new Date(alisTarihi + 'T12:00:00Z'));
+          const adjustedSatisDate = getPreviousWeekday(new Date(satisTarihi + 'T12:00:00Z'));
+
+          const adjustedAlisTarihiString = adjustedAlisDate.toISOString().split('T')[0];
+          const adjustedSatisTarihiString = adjustedSatisDate.toISOString().split('T')[0];
+
+          // Eğer tarih değiştiyse kullanıcıyı bilgilendir ve inputları güncelle
+          if (alisTarihi !== adjustedAlisTarihiString || satisTarihi !== adjustedSatisTarihiString) {
+            notificationArea.textContent =
+              'Not: Seçtiğiniz tarih hafta sonuna denk geldiği için analiz en yakın iş gününe göre yapılmıştır.';
+            notificationArea.style.display = 'block';
+            alisTarihiInput.value = adjustedAlisTarihiString;
+            satisTarihiInput.value = adjustedSatisTarihiString;
+          }
+
+          // API'ye istek gönderme
+          fetchDataAndAnalyze(adjustedAlisTarihiString, alisFiyati, adjustedSatisTarihiString, satisFiyati);
+        });
+
+        function getPreviousWeekday(date) {
+          const day = date.getUTCDay();
+          if (day === 0) {
+            date.setUTCDate(date.getUTCDate() - 2);
+          } else if (day === 6) {
+            date.setUTCDate(date.getUTCDate() - 1);
+          }
+          return date;
+        }
+
+        async function fetchDataAndAnalyze(alisTarihi, alisFiyati, satisTarihi, satisFiyati) {
+          analyzeButton.disabled = true;
+          analyzeButton.textContent = 'Analiz Ediliyor...';
+
+          loader.classList.remove('hidden');
+          resultsContainer.innerHTML = '';
+
+          const cacheKey = `${alisTarihi}-${satisTarihi}`;
+          const cachedData = apiCache.get(cacheKey);
+
+          if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
+            console.log('Using cached data');
+            displayResults(cachedData.data, alisFiyati, satisFiyati);
+            loader.classList.add('hidden');
+            analyzeButton.disabled = false;
+            analyzeButton.textContent = 'Analiz Et';
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('alisTarihi', formatDateForAPI(alisTarihi));
+          formData.append('satisTarihi', formatDateForAPI(satisTarihi));
+
+          try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+            const response = await fetch(API_URL, {
+              method: 'POST',
+              body: formData,
+              redirect: 'follow',
+              signal: controller.signal,
             });
 
-            function getPreviousWeekday(date) {
-                const day = date.getUTCDay();
-                if (day === 0) {
-                    date.setUTCDate(date.getUTCDate() - 2);
-                } else if (day === 6) {
-                    date.setUTCDate(date.getUTCDate() - 1);
-                }
-                return date;
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              throw new Error(`API Hatası: ${response.statusText}`);
             }
 
-            async function fetchDataAndAnalyze(alisTarihi, alisFiyati, satisTarihi, satisFiyati) {
-                analyzeButton.disabled = true;
-                analyzeButton.textContent = 'Analiz Ediliyor...';
-                
-                loader.classList.remove('hidden');
-                resultsContainer.innerHTML = '';
+            const data = await response.json();
 
-                const cacheKey = `${alisTarihi}-${satisTarihi}`;
-                const cachedData = apiCache.get(cacheKey);
-                
-                if (cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
-                    console.log('Using cached data');
-                    displayResults(cachedData.data, alisFiyati, satisFiyati);
-                    loader.classList.add('hidden');
-                    analyzeButton.disabled = false;
-                    analyzeButton.textContent = 'Analiz Et';
-                    return;
-                }
+            apiCache.set(cacheKey, {
+              data: data,
+              timestamp: Date.now(),
+            });
 
-                const formData = new FormData();
-                formData.append('alisTarihi', formatDateForAPI(alisTarihi));
-                formData.append('satisTarihi', formatDateForAPI(satisTarihi));
+            displayResults(data, alisFiyati, satisFiyati);
+          } catch (error) {
+            console.error('API çağrısı sırasında bir hata oluştu:', error);
+            if (error.name === 'AbortError') {
+              resultsContainer.innerHTML = `<p class="text-error">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</p>`;
+            } else {
+              resultsContainer.innerHTML = `<p class="text-error">Veriler alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>`;
+            }
+          } finally {
+            loader.classList.add('hidden');
+            analyzeButton.disabled = false;
+            analyzeButton.textContent = 'Analiz Et';
+          }
+        }
 
-                try {
-                    const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+        function displayResults(data, alisFiyati, satisFiyati) {
+          resultsContainer.innerHTML = '';
 
-                    const response = await fetch(API_URL, {
-                        method: 'POST',
-                        body: formData,
-                        redirect: 'follow',
-                        signal: controller.signal
-                    });
-                    
-                    clearTimeout(timeoutId);
+          if (!data.alis_verileri || !data.satis_verileri) {
+            resultsContainer.innerHTML = `<p class="text-error">API'den eksik veri geldi. Seçtiğiniz tarihler için veri bulunamıyor olabilir.</p>`;
+            return;
+          }
 
-                    if (!response.ok) {
-                        throw new Error(`API Hatası: ${response.statusText}`);
-                    }
+          const assets = [
+            { key: 'Altın Ortalama', name: 'Altın', unit: 'gr Altın' },
+            { key: 'usd/tl', name: 'ABD Doları', unit: 'USD' },
+            { key: 'euro/tl', name: 'Euro', unit: 'EUR' },
+            { key: 'bist', name: 'BIST 100 Endeksi', unit: 'Puan' },
+            { key: 'gyo endeks', name: 'GYO Endeksi', unit: 'Puan' },
+            { key: 'TÜFE ENDEKS', name: 'Enflasyon (TÜFE)', unit: 'TL (Enflasyona Göre)' },
+          ];
 
-                    const data = await response.json();
-                    
-                    apiCache.set(cacheKey, {
-                        data: data,
-                        timestamp: Date.now()
-                    });
-                    
-                    displayResults(data, alisFiyati, satisFiyati);
+          const fragment = document.createDocumentFragment();
 
-                } catch (error) {
-                    console.error('API çağrısı sırasında bir hata oluştu:', error);
-                    if (error.name === 'AbortError') {
-                        resultsContainer.innerHTML = `<p class="zarar">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</p>`;
-                    } else {
-                        resultsContainer.innerHTML = `<p class="zarar">Veriler alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>`;
-                    }
-                } finally {
-                    loader.classList.add('hidden');
-                    analyzeButton.disabled = false;
-                    analyzeButton.textContent = 'Analiz Et';
-                }
+          assets.forEach((asset) => {
+            const alisKuru = data.alis_verileri[asset.key];
+            const satisKuru = data.satis_verileri[asset.key];
+
+            if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
+              return;
             }
 
-            function displayResults(data, alisFiyati, satisFiyati) {
-                resultsContainer.innerHTML = '';
+            let alisDegeri, satisDegeri;
 
-                if (!data.alis_verileri || !data.satis_verileri) {
-                     resultsContainer.innerHTML = `<p class="zarar">API'den eksik veri geldi. Seçtiğiniz tarihler için veri bulunamıyor olabilir.</p>`;
-                     return;
-                }
+            if (asset.key === 'TÜFE ENDEKS') {
+              alisDegeri = alisFiyati;
+              satisDegeri = satisFiyati * (alisKuru / satisKuru);
+            } else {
+              alisDegeri = alisFiyati / alisKuru;
+              satisDegeri = satisFiyati / satisKuru;
+            }
 
-                const assets = [
-                    { key: 'Altın Ortalama', name: 'Altın', unit: 'gr Altın' },
-                    { key: 'usd/tl', name: 'ABD Doları', unit: 'USD' },
-                    { key: 'euro/tl', name: 'Euro', unit: 'EUR' },
-                    { key: 'bist', name: 'BIST 100 Endeksi', unit: 'Puan' },
-                    { key: 'gyo endeks', name: 'GYO Endeksi', unit: 'Puan' },
-                    { key: 'TÜFE ENDEKS', name: 'Enflasyon (TÜFE)', unit: 'TL (Enflasyona Göre)' }
-                ];
+            const karZarar = satisDegeri - alisDegeri;
+            const karZararClass = karZarar >= 0 ? 'text-success' : 'text-error';
+            const karZararPrefix = karZarar >= 0 ? '+' : '';
 
-                const fragment = document.createDocumentFragment();
+            const yuzdelikDegisim = ((satisDegeri - alisDegeri) / alisDegeri) * 100;
+            const yuzdelikPrefix = yuzdelikDegisim >= 0 ? '+' : '';
+            const yuzdelikClass = yuzdelikDegisim >= 0 ? 'positive' : 'negative';
 
-                assets.forEach(asset => {
-                    const alisKuru = data.alis_verileri[asset.key];
-                    const satisKuru = data.satis_verileri[asset.key];
-
-                    if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
-                        return;
-                    }
-
-                    let alisDegeri, satisDegeri;
-
-                    if (asset.key === 'TÜFE ENDEKS') {
-                        alisDegeri = alisFiyati;
-                        satisDegeri = satisFiyati * (alisKuru / satisKuru);
-                    } else {
-                        alisDegeri = alisFiyati / alisKuru;
-                        satisDegeri = satisFiyati / satisKuru;
-                    }
-
-                    const karZarar = satisDegeri - alisDegeri;
-                    const karZararClass = karZarar >= 0 ? 'kar' : 'zarar';
-                    const karZararPrefix = karZarar >= 0 ? '+' : '';
-
-                    const yuzdelikDegisim = ((satisDegeri - alisDegeri) / alisDegeri) * 100;
-                    const yuzdelikPrefix = yuzdelikDegisim >= 0 ? '+' : '';
-                    const yuzdelikClass = yuzdelikDegisim >= 0 ? 'kar' : 'zarar';
-
-                    const cardDiv = document.createElement('div');
-                    cardDiv.className = 'card';
-                    cardDiv.innerHTML = `
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'result-card';
+            cardDiv.innerHTML = `
                         <h3>${asset.name} Karşılığı Performans</h3>
                         <p>Alış Değeri: <strong>${formatNumber(alisDegeri, asset.key)} ${asset.unit}</strong></p>
                         <p>Satış Değeri: <strong>${formatNumber(satisDegeri, asset.key)} ${asset.unit}</strong></p>
                         <p class="${karZararClass}">
                             ${karZarar >= 0 ? 'Kâr' : 'Zarar'}: <strong>${karZararPrefix}${formatNumber(karZarar, asset.key)} ${asset.unit}</strong>
                         </p>
-                        <div class="percentage ${yuzdelikClass}">
+                        <div class="performance-badge ${yuzdelikClass}">
                             ${yuzdelikPrefix}${yuzdelikDegisim.toFixed(2)}% ${yuzdelikDegisim >= 0 ? 'Kazanç' : 'Kayıp'}
                         </div>
                     `;
-                    fragment.appendChild(cardDiv);
-                });
+            fragment.appendChild(cardDiv);
+          });
 
-                const breakEvenSection = document.createElement('div');
-                breakEvenSection.innerHTML = `
-                    <div style="grid-column: 1 / -1; margin: 2rem 0 1rem; padding: 1.5rem; background: linear-gradient(135deg, var(--muted) 0%, #f0f9ff 100%); border-radius: var(--radius); border: 1px solid var(--border);">
-                        <h2 style="color: var(--primary); font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; text-align: center;">Başa Baş Noktaları</h2>
-                        <p style="color: var(--muted-foreground); text-align: center; font-size: 0.95rem; line-height: 1.5;">
-                            Aşağıdaki değerler, yatırımınızın her bir varlık karşısında başa baş çıkması için gereken minimum satış fiyatlarını göstermektedir.
-                        </p>
-                    </div>
+          const breakEvenSection = document.createElement('div');
+          breakEvenSection.className = 'section-header';
+          breakEvenSection.innerHTML = `
+                    <h2>Başa Baş Noktaları</h2>
+                    <p>Aşağıdaki değerler, yatırımınızın her bir varlık karşısında başa baş çıkması için gereken minimum satış fiyatlarını göstermektedir.</p>
                 `;
-                fragment.appendChild(breakEvenSection);
+          fragment.appendChild(breakEvenSection);
 
-                assets.forEach(asset => {
-                    const alisKuru = data.alis_verileri[asset.key];
-                    const satisKuru = data.satis_verileri[asset.key];
+          assets.forEach((asset) => {
+            const alisKuru = data.alis_verileri[asset.key];
+            const satisKuru = data.satis_verileri[asset.key];
 
-                    if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
-                        return;
-                    }
+            if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
+              return;
+            }
 
-                    let breakEvenPrice;
-                    let explanation;
+            let breakEvenPrice;
+            let explanation;
 
-                    if (asset.key === 'TÜFE ENDEKS') {
-                        // Enflasyon için başa baş: alış fiyatı * (satış TÜFE / alış TÜFE)
-                        breakEvenPrice = alisFiyati * (satisKuru / alisKuru);
-                        explanation = `Enflasyona karşı değer kaybetmemek için minimum ${formatNumber(breakEvenPrice)} TL'ye satış yapmalısınız.`;
-                    } else {
-                        // Diğer varlıklar için başa baş: alış fiyatı * (satış kuru / alış kuru)
-                        breakEvenPrice = alisFiyati * (satisKuru / alisKuru);
-                        explanation = `${asset.name} karşısında başa baş çıkmak için minimum ${formatNumber(breakEvenPrice)} TL'ye satış yapmalısınız.`;
-                    }
+            if (asset.key === 'TÜFE ENDEKS') {
+              // Enflasyon için başa baş: alış fiyatı * (satış TÜFE / alış TÜFE)
+              breakEvenPrice = alisFiyati * (satisKuru / alisKuru);
+              explanation = `Enflasyona karşı değer kaybetmemek için minimum ${formatNumber(breakEvenPrice)} TL'ye satış yapmalısınız.`;
+            } else {
+              // Diğer varlıklar için başa baş: alış fiyatı * (satış kuru / alış kuru)
+              breakEvenPrice = alisFiyati * (satisKuru / alisKuru);
+              explanation = `${asset.name} karşısında başa baş çıkmak için minimum ${formatNumber(breakEvenPrice)} TL'ye satış yapmalısınız.`;
+            }
 
-                    const currentPrice = parseFloat(satisFiyatiInput.value) || 0;
-                    const isAboveBreakEven = currentPrice >= breakEvenPrice;
-                    const statusClass = isAboveBreakEven ? 'kar' : 'zarar';
-                    const statusText = isAboveBreakEven ? 'Başa Baş Üzerinde' : 'Başa Baş Altında';
-                    const statusIcon = isAboveBreakEven ? '✓' : '⚠';
+            const currentPrice = parseFloat(satisFiyatiInput.value) || 0;
+            const isAboveBreakEven = currentPrice >= breakEvenPrice;
+            const statusClass = isAboveBreakEven ? 'positive' : 'warning';
+            const cardClass = isAboveBreakEven ? 'above' : 'below';
+            const statusText = isAboveBreakEven ? 'Başa Baş Üzerinde' : 'Başa Baş Altında';
+            const statusIcon = isAboveBreakEven ? '✓' : '⚠';
 
-                    const breakEvenCard = document.createElement('div');
-                    breakEvenCard.className = 'card';
-                    breakEvenCard.style.borderLeft = `4px solid ${isAboveBreakEven ? 'var(--success)' : 'var(--warning)'}`;
-                    breakEvenCard.innerHTML = `
+            const breakEvenCard = document.createElement('div');
+            breakEvenCard.className = `breakeven-card ${cardClass}`;
+            breakEvenCard.innerHTML = `
                         <h3>${asset.name} Başa Baş Noktası</h3>
                         <p><strong>Başa Baş Fiyatı:</strong> ${formatNumber(breakEvenPrice)} TL</p>
                         <p><strong>Mevcut Satış Fiyatı:</strong> ${formatNumber(currentPrice)} TL</p>
-                        <p class="${statusClass}"><strong>${statusIcon} Durum:</strong> ${statusText}</p>
-                        <div style="margin-top: 1rem; padding: 1rem; background: var(--muted); border-radius: calc(var(--radius) - 0.25rem); font-size: 0.9rem; color: var(--muted-foreground);">
+                        <div class="status-indicator ${statusClass}">
+                            ${statusIcon} ${statusText}
+                        </div>
+                        <div class="explanation-box">
                             ${explanation}
                         </div>
                     `;
-                    fragment.appendChild(breakEvenCard);
-                });
+            fragment.appendChild(breakEvenCard);
+          });
 
-                resultsContainer.appendChild(fragment);
-            }
-
-            function formatDateForAPI(dateString) {
-                const [year, month, day] = dateString.split('-');
-                return `${day}.${month}.${year}`;
-            }
-
-            function formatNumber(number, key) {
-                const options = {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                };
-                if (key === 'TÜFE ENDEKS') {
-                    return number.toLocaleString('tr-TR', options);
-                }
-                return number.toLocaleString('tr-TR', options);
-            }
-        });
-    </script>
-
-    <!-- Optimized PWA setup with better error handling -->
-    <script>
-        // 1. Manifest dosyasını dinamik olarak oluştur ve bağla
-        const manifest = {
-          "short_name": "Reel Getiri",
-          "name": "Reel Getiri Analiz Platformu",
-          "start_url": ".",
-          "display": "standalone",
-          "theme_color": "#15803d",
-          "background_color": "#ffffff",
-          "description": "Gayrimenkul yatırımlarınızın reel getirisini analiz eden PWA.",
-          "icons": [
-            {
-              "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik05NiAyNEwxNDQgOTZIMTIwVjEyMEg3MlY5Nkg5Nkw5NiAyNFoiIGZpbGw9IiMxNTgwM2QiLz4KPGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iMjQiIGZpbGw9IiMxNTY3OWUiLz4KPHBhdGggZD0iTTEyMCA5NkgxNDRWMjA4SDEyMFY5NloiIGZpbGw9IiNmNTllMGEiLz4KPHBhdGggZD0iTTk2IDEyMEgxMjBWMjA4SDk2VjEyMFoiIGZpbGw9IiMxNTY3OWUiLz4KPC9zdmc+Cg==",
-              "sizes": "192x192",
-              "type": "image/svg+xml",
-              "purpose": "any"
-            },
-            {
-              "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0yNTYgNjRMMzg0IDI1NkgyODhWMjg4SDE5MlYyNTZIMjU2TDI1NiA2NFoiIGZpbGw9IiMxNTgwM2QiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSI2NCIgZmlsbD0iIzE1Njc5ZSIvPgo8cGF0aCBkPSJNMjg4IDI1NkgzODRWMjU2SDI4OFYyNTZaIiBmaWxsPSIjZjU5ZTBhIi8+CjxwYXRoIGQ9Ik0yNTYgMjg4SDI4OFYyNTZIMjU2VjI4OFoiIGZpbGw9IiMxNTY3OWUiLz4KPC9zdmc+Cg==",
-              "sizes": "512x512",
-              "type": "image/svg+xml",
-              "purpose": "any"
-            }
-          ]
-        };
-        
-        try {
-            const manifestString = JSON.stringify(manifest);
-            const manifestBlob = new Blob([manifestString], {type: 'application/json'});
-            const manifestUrl = URL.createObjectURL(manifestBlob);
-            document.getElementById('manifest-link').setAttribute('href', manifestUrl);
-        } catch (error) {
-            console.warn('Manifest oluşturulamadı:', error);
+          resultsContainer.appendChild(fragment);
         }
 
-        // 2. Service Worker'ı kaydet
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'reel-getiri-analiz-v2';
+        function formatDateForAPI(dateString) {
+          const [year, month, day] = dateString.split('-');
+          return `${day}.${month}.${year}`;
+        }
+
+        function formatNumber(number, key) {
+          const options = {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          };
+          if (key === 'TÜFE ENDEKS') {
+            return number.toLocaleString('tr-TR', options);
+          }
+          return number.toLocaleString('tr-TR', options);
+        }
+      });
+    </script>
+
+    <!-- PWA Setup (Unchanged from original) -->
+    <script>
+      // 1. Manifest dosyasını dinamik olarak oluştur ve bağla
+      const manifest = {
+        short_name: 'Reel Getiri',
+        name: 'Reel Getiri Analiz Platformu',
+        start_url: '.',
+        display: 'standalone',
+        theme_color: '#00ff88',
+        background_color: '#0a0a0a',
+        description: 'Gayrimenkul yatırımlarınızın reel getirisini analiz eden PWA.',
+      };
+
+      try {
+        const manifestString = JSON.stringify(manifest);
+        const manifestBlob = new Blob([manifestString], { type: 'application/json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-link').setAttribute('href', manifestUrl);
+      } catch (error) {
+        console.warn('Manifest oluşturulamadı:', error);
+      }
+
+      // 2. Service Worker'ı kaydet
+      if ('serviceWorker' in navigator) {
+        const swCode = `
+                const CACHE_NAME = 'reel-getiri-analiz-v3';
                 const urlsToCache = ['/'];
 
                 self.addEventListener('install', event => {
@@ -746,24 +1044,26 @@
                     );
                 });
             `;
-            
-            try {
-                const swBlob = new Blob([swCode], { type: 'application/javascript' });
-                const swUrl = URL.createObjectURL(swBlob);
 
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register(swUrl)
-                        .then(registration => {
-                            console.log('ServiceWorker kaydı başarılı: ', registration.scope);
-                        })
-                        .catch(error => {
-                            console.log('ServiceWorker kaydı başarısız: ', error);
-                        });
-                });
-            } catch (error) {
-                console.warn('Service Worker oluşturulamadı:', error);
-            }
+        try {
+          const swBlob = new Blob([swCode], { type: 'application/javascript' });
+          const swUrl = URL.createObjectURL(swBlob);
+
+          window.addEventListener('load', () => {
+            navigator.serviceWorker
+              .register(swUrl)
+              .then((registration) => {
+                console.log('ServiceWorker kaydı başarılı: ', registration.scope);
+              })
+              .catch((error) => {
+                console.log('ServiceWorker kaydı başarısız: ', error);
+              });
+          });
+        } catch (error) {
+          console.warn('Service Worker oluşturulamadı:', error);
         }
+      }
     </script>
-</body>
-</html>
+  
+
+</body></html>
