@@ -1,1093 +1,352 @@
-
 <!DOCTYPE html>
-<html lang="tr" data-theme="dark" style=""><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reel Getiri Analiz Platformu</title>
-
-    <!-- PWA Manifest -->
-    <link rel="manifest" id="manifest-link" href="blob:https://www.genspark.ai/17e6258a-6c02-43f3-a7db-7de98243dde2">
-
-    <!-- Theme -->
-    <meta name="theme-color" content="#00ff88">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-    <!-- Modern Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet">
-
-    <style>
-      :root {
-        /* Ultra Modern Color Palette */
-        --bg-primary: #0a0a0a;
-        --bg-secondary: #111111;
-        --bg-card: rgba(255, 255, 255, 0.03);
-        --bg-glass: rgba(255, 255, 255, 0.05);
-        --text-primary: #ffffff;
-        --text-secondary: #a1a1aa;
-        --text-muted: #71717a;
-
-        /* Neon Colors */
-        --neon-green: #00ff88;
-        --neon-blue: #00d4ff;
-        --neon-purple: #8b5cf6;
-        --neon-pink: #f472b6;
-        --neon-orange: #fb923c;
-
-        /* Gradients */
-        --gradient-primary: linear-gradient(135deg, var(--neon-green) 0%, var(--neon-blue) 100%);
-        --gradient-secondary: linear-gradient(135deg, var(--neon-purple) 0%, var(--neon-pink) 100%);
-        --gradient-bg: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-
-        /* Light Theme */
-        --bg-primary-light: #ffffff;
-        --bg-secondary-light: #f8fafc;
-        --bg-card-light: rgba(0, 0, 0, 0.02);
-        --bg-glass-light: rgba(0, 0, 0, 0.03);
-        --text-primary-light: #0f172a;
-        --text-secondary-light: #475569;
-        --text-muted-light: #64748b;
-
-        /* Spacing */
-        --space-xs: 0.5rem;
-        --space-sm: 1rem;
-        --space-md: 1.5rem;
-        --space-lg: 2rem;
-        --space-xl: 3rem;
-        --space-2xl: 4rem;
-        --space-3xl: 6rem;
-
-        /* Border Radius */
-        --radius-sm: 0.5rem;
-        --radius-md: 1rem;
-        --radius-lg: 1.5rem;
-        --radius-xl: 2rem;
-
-        /* Shadows */
-        --shadow-glow: 0 0 20px rgba(0, 255, 136, 0.3);
-        --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.3);
-        --shadow-card: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      }
-
-      [data-theme='light'] {
-        --bg-primary: var(--bg-primary-light);
-        --bg-secondary: var(--bg-secondary-light);
-        --bg-card: var(--bg-card-light);
-        --bg-glass: var(--bg-glass-light);
-        --text-primary: var(--text-primary-light);
-        --text-secondary: var(--text-secondary-light);
-        --text-muted: var(--text-muted-light);
-        --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
-      }
-
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        font-family:
-          'Inter',
-          -apple-system,
-          BlinkMacSystemFont,
-          system-ui,
-          sans-serif;
-        background: var(--gradient-bg);
-        color: var(--text-primary);
-        line-height: 1.6;
-        min-height: 100vh;
-        overflow-x: hidden;
-        position: relative;
-      }
-
-      [data-theme='light'] body {
-        background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 50%, #e2e8f0 100%);
-      }
-
-      /* Animated Background */
-      body::before {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background:
-          radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
-          radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-        animation: backgroundFlow 20s ease-in-out infinite;
-        z-index: -1;
-      }
-
-      @keyframes backgroundFlow {
-        0%,
-        100% {
-          opacity: 0.3;
-        }
-        50% {
-          opacity: 0.6;
-        }
-      }
-
-      /* Theme Toggle */
-      .theme-toggle {
-        position: fixed;
-        top: 2rem;
-        right: 2rem;
-        z-index: 1000;
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-md);
-        padding: 0.75rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        color: var(--text-primary);
-        font-size: 1.25rem;
-      }
-
-      .theme-toggle:hover {
-        background: var(--bg-card);
-        transform: scale(1.05);
-      }
-
-      /* Main Container */
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: var(--space-lg);
-        position: relative;
-        z-index: 1;
-      }
-
-      /* Hero Section */
-      .hero {
-        text-align: center;
-        padding: var(--space-3xl) 0;
-        margin-bottom: var(--space-2xl);
-      }
-
-      .hero h1 {
-        font-size: clamp(3rem, 8vw, 6rem);
-        font-weight: 900;
-        background: var(--gradient-primary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: var(--space-md);
-        letter-spacing: -0.02em;
-        line-height: 0.9;
-      }
-
-      .hero .subtitle {
-        font-size: clamp(1.25rem, 3vw, 1.75rem);
-        color: var(--text-secondary);
-        font-weight: 400;
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.4;
-      }
-
-      /* Glass Card */
-      .glass-card {
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-xl);
-        padding: var(--space-2xl);
-        margin-bottom: var(--space-lg);
-        box-shadow: var(--shadow-glass);
-        position: relative;
-        overflow: hidden;
-      }
-
-      [data-theme='light'] .glass-card {
-        border: 1px solid rgba(0, 0, 0, 0.05);
-      }
-
-      .glass-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: var(--gradient-primary);
-      }
-
-      /* Form Styling */
-      .form-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: var(--space-lg);
-        margin-bottom: var(--space-xl);
-      }
-
-      .form-group {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-sm);
-      }
-
-      .form-group label {
-        font-weight: 600;
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: var(--space-xs);
-      }
-
-      .form-group input {
-        padding: 1.25rem 1.5rem;
-        background: var(--bg-card);
-        border: 2px solid transparent;
-        border-radius: var(--radius-md);
-        color: var(--text-primary);
-        font-size: 1.125rem;
-        font-weight: 500;
-        font-family: 'JetBrains Mono', monospace;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-      }
-
-      .form-group input:focus {
-        outline: none;
-        border-color: var(--neon-green);
-        box-shadow: 0 0 0 4px rgba(0, 255, 136, 0.1);
-        background: var(--bg-glass);
-      }
-
-      .form-group input::placeholder {
-        color: var(--text-muted);
-      }
-
-      /* Modern Button */
-      .btn-primary {
-        grid-column: 1 / -1;
-        padding: 1.5rem 3rem;
-        background: var(--gradient-primary);
-        color: white;
-        border: none;
-        border-radius: var(--radius-md);
-        font-size: 1.25rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-
-      .btn-primary:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-glow);
-      }
-
-      .btn-primary:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      /* Loading Animation */
-      .loader {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: var(--space-2xl);
-        gap: var(--space-md);
-        color: var(--text-secondary);
-      }
-
-      .loader.hidden {
-        display: none;
-      }
-
-      .spinner {
-        width: 3rem;
-        height: 3rem;
-        border: 3px solid var(--bg-card);
-        border-top: 3px solid var(--neon-green);
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-      }
-
-      @keyframes spin {
-        0% {
-          transform: rotate(0deg);
-        }
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      .loader span {
-        font-size: 1.125rem;
-        font-weight: 500;
-      }
-
-      /* Notification */
-      .notification {
-        background: rgba(0, 255, 136, 0.1);
-        border: 1px solid var(--neon-green);
-        border-radius: var(--radius-md);
-        padding: var(--space-md);
-        margin: var(--space-lg) 0;
-        color: var(--neon-green);
-        font-weight: 500;
-        display: none;
-      }
-
-      /* Results Grid */
-      .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: var(--space-lg);
-        margin-top: var(--space-xl);
-      }
-
-      /* Result Cards */
-      .result-card {
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-lg);
-        padding: var(--space-xl);
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-      }
-
-      [data-theme='light'] .result-card {
-        border: 1px solid rgba(0, 0, 0, 0.05);
-      }
-
-      .result-card:hover {
-        transform: translateY(-8px);
-        box-shadow: var(--shadow-card);
-      }
-
-      .result-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--gradient-primary);
-      }
-
-      .result-card h3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: var(--space-md);
-        line-height: 1.2;
-      }
-
-      .result-card p {
-        color: var(--text-secondary);
-        margin-bottom: var(--space-sm);
-        font-size: 1rem;
-        line-height: 1.5;
-      }
-
-      .result-card p strong {
-        color: var(--text-primary);
-        font-weight: 600;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 1.1em;
-      }
-
-      /* Performance Indicators */
-      .performance-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-xs);
-        padding: var(--space-md) var(--space-lg);
-        border-radius: var(--radius-md);
-        font-weight: 700;
-        font-size: 1.5rem;
-        text-align: center;
-        margin-top: var(--space-md);
-        width: 100%;
-        justify-content: center;
-        font-family: 'JetBrains Mono', monospace;
-      }
-
-      .performance-badge.positive {
-        background: linear-gradient(135deg, rgba(0, 255, 136, 0.2) 0%, rgba(34, 197, 94, 0.2) 100%);
-        border: 2px solid var(--neon-green);
-        color: var(--neon-green);
-      }
-
-      .performance-badge.negative {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
-        border: 2px solid #ef4444;
-        color: #ef4444;
-      }
-
-      /* Section Headers */
-      .section-header {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: var(--space-xl);
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-lg);
-        margin: var(--space-xl) 0;
-        position: relative;
-        overflow: hidden;
-      }
-
-      [data-theme='light'] .section-header {
-        border: 1px solid rgba(0, 0, 0, 0.05);
-      }
-
-      .section-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: var(--gradient-secondary);
-      }
-
-      .section-header h2 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        background: var(--gradient-secondary);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin-bottom: var(--space-sm);
-      }
-
-      .section-header p {
-        color: var(--text-secondary);
-        font-size: 1.125rem;
-        max-width: 600px;
-        margin: 0 auto;
-      }
-
-      /* Breakeven Cards */
-      .breakeven-card {
-        background: var(--bg-glass);
-        backdrop-filter: blur(20px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: var(--radius-lg);
-        padding: var(--space-xl);
-        position: relative;
-        overflow: hidden;
-        transition: all 0.3s ease;
-      }
-
-      [data-theme='light'] .breakeven-card {
-        border: 1px solid rgba(0, 0, 0, 0.05);
-      }
-
-      .breakeven-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-card);
-      }
-
-      .breakeven-card.above {
-        border-left: 4px solid var(--neon-green);
-      }
-
-      .breakeven-card.below {
-        border-left: 4px solid var(--neon-orange);
-      }
-
-      .status-indicator {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-xs);
-        padding: var(--space-sm) var(--space-md);
-        border-radius: var(--radius-sm);
-        font-weight: 600;
-        font-size: 0.875rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-top: var(--space-sm);
-      }
-
-      .status-indicator.positive {
-        background: rgba(0, 255, 136, 0.15);
-        color: var(--neon-green);
-      }
-
-      .status-indicator.warning {
-        background: rgba(251, 146, 60, 0.15);
-        color: var(--neon-orange);
-      }
-
-      .explanation-box {
-        margin-top: var(--space-md);
-        padding: var(--space-md);
-        background: var(--bg-card);
-        border-radius: var(--radius-sm);
-        border-left: 3px solid var(--neon-blue);
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        line-height: 1.6;
-      }
-
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        .container {
-          padding: var(--space-md);
-        }
-
-        .hero {
-          padding: var(--space-xl) 0;
-        }
-
-        .glass-card {
-          padding: var(--space-lg);
-        }
-
-        .form-container {
-          grid-template-columns: 1fr;
-          gap: var(--space-md);
-        }
-
-        .results-grid {
-          grid-template-columns: 1fr;
-          gap: var(--space-md);
-        }
-
-        .theme-toggle {
-          top: 1rem;
-          right: 1rem;
-        }
-      }
-
-      @media (max-width: 480px) {
-        .hero h1 {
-          font-size: 2.5rem;
-        }
-
-        .form-group input {
-          padding: 1rem;
-          font-size: 1rem;
-        }
-
-        .btn-primary {
-          padding: 1.25rem 2rem;
-          font-size: 1rem;
-        }
-
-        .result-card {
-          padding: var(--space-lg);
-        }
-      }
-
-      /* Color utility classes */
-      .text-success {
-        color: var(--neon-green) !important;
-      }
-      .text-error {
-        color: #ef4444 !important;
-      }
-      .text-warning {
-        color: var(--neon-orange) !important;
-      }
-      .text-primary {
-        color: var(--text-primary) !important;
-      }
-      .text-secondary {
-        color: var(--text-secondary) !important;
-      }
-
-      /* Animation for cards appearing */
-      @keyframes slideUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-
-      .result-card {
-        animation: slideUp 0.6s ease-out;
-      }
-
-      .result-card:nth-child(even) {
-        animation-delay: 0.1s;
-      }
-
-      .result-card:nth-child(odd) {
-        animation-delay: 0.2s;
-      }
-    </style>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Open%20Sans:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Noto%20Sans%20JP:wght@400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&amp;display=swap" rel="stylesheet"></head>
-  <body style="">
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" onclick="toggleTheme()">🌓</div>
-
-    <div class="container">
-      <!-- Hero Section -->
-      <section class="hero">
-        <h1>Reel Getiri Analizi</h1>
-        <p class="subtitle">Yatırımınızın enflasyon ve döviz karşısındaki gerçek performansını ölçün</p>
-      </section>
-
-      <!-- Input Form -->
-      <div class="glass-card">
-        <form id="analysis-form">
-          <div class="form-container">
-            <div class="form-group">
-              <label for="alis-tarihi">Alış Tarihi</label>
-              <input type="date" id="alis-tarihi" required="" max="2025-09-15">
-            </div>
-            <div class="form-group">
-              <label for="alis-fiyati">Alış Fiyatı (TL)</label>
-              <input type="number" id="alis-fiyati" placeholder="1.000.000" required="">
-            </div>
-            <div class="form-group">
-              <label for="satis-tarihi">Satış Tarihi</label>
-              <input type="date" id="satis-tarihi" required="" max="2025-09-15">
-            </div>
-            <div class="form-group">
-              <label for="satis-fiyati">Satış Fiyatı (TL)</label>
-              <input type="number" id="satis-fiyati" placeholder="3.000.000" required="">
-            </div>
-            <button type="submit" id="analyze-button" class="btn-primary">Analiz Et</button>
-          </div>
-        </form>
-      </div>
-
-      <!-- Notification Area -->
-      <div id="notification-area" class="notification"></div>
-
-      <!-- Loading Indicator -->
-      <div id="loader" class="loader hidden">
-        <div class="spinner"></div>
-        <span>Veriler hesaplanıyor...</span>
-      </div>
-
-      <!-- Results Section -->
-      <div id="results-container" class="results-grid">
-        <!-- Results will be dynamically inserted here -->
-      </div>
+<html lang="tr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Calculator — Reel Getiri Analizi</title>
+  <meta name="description" content="Gayrimenkul yatırımınızın reel getirisini, enflasyon ve alternatif yatırımlara karşı kolayca analiz edin.">
+  <meta name="theme-color" content="#10b981">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #10b981;
+      --primary-dark: #059669;
+      --danger: #ef4444;
+      --danger-bg: #fee2e2;
+      --warning: #f59e0b;
+      --shadow: 0 4px 24px rgba(0,0,0,0.06);
+      --radius: 16px;
+    }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --primary: #34d399;
+      --primary-dark: #10b981;
+      --danger: #f87171;
+      --danger-bg: rgba(239,68,68,0.15);
+      --shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+    header { text-align: center; margin-bottom: 28px; position: relative; }
+    h1 { font-size: 2rem; margin: 0 0 6px; letter-spacing: -0.5px; }
+    .subtitle { color: var(--muted); font-size: 1rem; margin: 0; }
+    .theme-toggle {
+      position: absolute; top: 0; right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 12px; cursor: pointer;
+      font-size: 1.1rem; box-shadow: var(--shadow);
+    }
+    .card {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px;
+    }
+    .form-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
+    }
+    label {
+      display: flex; flex-direction: column; gap: 6px;
+      font-size: 0.875rem; font-weight: 500;
+    }
+    input, select {
+      padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: 10px; font-size: 1rem; background: var(--surface);
+      color: var(--text); transition: border-color .15s, box-shadow .15s;
+    }
+    input:focus, select:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+    .full { grid-column: 1 / -1; }
+    .btn {
+      width: 100%; padding: 14px; border: none; border-radius: 10px;
+      background: var(--primary); color: #fff; font-size: 1rem;
+      font-weight: 600; cursor: pointer; transition: background .15s;
+    }
+    .btn:hover { background: var(--primary-dark); }
+    .btn:disabled { opacity: .6; cursor: wait; }
+    .hint { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+    }
+    .kpi {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 18px; text-align: center;
+    }
+    .kpi-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .kpi-value { display: block; font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
+    .kpi-sub { font-size: 0.8rem; color: var(--muted); }
+    .positive { color: var(--primary-dark); }
+    .negative { color: var(--danger); }
+    [data-theme="dark"] .positive { color: var(--primary); }
+    .section-title { font-size: 1.25rem; font-weight: 700; margin: 0 0 14px; }
+    .metric-list { list-style: none; padding: 0; margin: 0; }
+    .metric-list li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .metric-list li:last-child { border-bottom: none; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+    .badge-profit { background: rgba(16,185,129,0.12); color: var(--primary-dark); }
+    .badge-loss { background: var(--danger-bg); color: var(--danger); }
+    .loader { text-align: center; padding: 40px; color: var(--muted); }
+    .spinner { width: 36px; height: 36px; margin: 0 auto 12px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .alert { padding: 14px; border-radius: 10px; margin-bottom: 16px; }
+    .alert-error { background: var(--danger-bg); color: var(--danger); }
+    .hidden { display: none !important; }
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 24px; }
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 1.6rem; }
+      .theme-toggle { position: static; float: right; margin-bottom: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Tema değiştir">🌓</button>
+      <h1>Property Calculator</h1>
+      <p class="subtitle">Gayrimenkul yatırımınızın reel getirisini analiz edin</p>
+    </header>
+
+    <section class="card">
+      <form id="calc-form">
+        <div class="form-grid">
+          <label>Alış Tarihi <input type="date" id="buy_date" required></label>
+          <label>Satış Tarihi <input type="date" id="sell_date" required></label>
+          <label>Alış Fiyatı (₺) <input type="number" id="buy_price" min="0" step="1000" required></label>
+          <label>Satış Fiyatı (₺) <input type="number" id="sell_price" min="0" step="1000" required></label>
+          <label>m² <input type="number" id="sqm" min="1" step="1"></label>
+          <label>Tip
+            <select id="property_type">
+              <option value="konut">Konut</option>
+              <option value="dukkan">Dükkan</option>
+              <option value="arsa">Arsa</option>
+            </select>
+          </label>
+          <label>Tapu Harcı (%) <input type="number" id="tapu_pct" min="0" max="10" step="0.01" value="0"></label>
+          <label>Komisyon (%) <input type="number" id="komisyon_pct" min="0" max="10" step="0.01" value="0"></label>
+          <label>Aylık Kira (₺) <input type="number" id="rental_monthly" min="0" step="100" value="0"></label>
+          <label>Boşluk + Bakım (%) <input type="number" id="rental_cost_pct" min="0" max="50" step="0.1" value="0"></label>
+          <div class="full"><button type="submit" class="btn" id="submit-btn">Analiz Et</button></div>
+        </div>
+      </form>
+    </section>
+
+    <div id="loader" class="loader hidden"><div class="spinner"></div><p>Hesaplanıyor...</p></div>
+    <div id="error" class="alert alert-error hidden"></div>
+
+    <div id="results" class="hidden">
+      <div class="kpi-grid" id="kpi-grid"></div>
+      <div class="card"><h2 class="section-title">Getiri Özeti</h2><ul class="metric-list" id="summary-list"></ul></div>
+      <div class="card"><h2 class="section-title">Alternatif Yatırımlar</h2><div class="table-wrap"><table id="alt-table"><thead><tr><th>Varlık</th><th>Getiri</th><th>Değer</th></tr></thead><tbody></tbody></table></div></div>
+      <div class="card"><h2 class="section-title">Başa Baş Noktası</h2><p id="break-even" style="font-size:1.4rem;font-weight:700;margin:0 0 8px;"></p><p class="hint">Satış fiyatınız bu değerin altındaysa zarar edersiniz.</p></div>
     </div>
 
-    <!-- JavaScript (Unchanged from original) -->
-    <script>
-      // Theme Toggle Function
-      function toggleTheme() {
-        const html = document.documentElement;
-        const currentTheme = html.getAttribute('data-theme');
-        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-        html.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
+    <footer>
+      <p>Veriler güncel ve örnek kaynaklardan sağlanır. Yatırım tavsiyesi değildir.</p>
+    </footer>
+  </div>
+
+  <script>
+    const DATA_BASE = 'data/';
+    const assetsMeta = {
+      'USD': { name: 'ABD Doları', file: 'fx.json', field: 'usd_try', unit: '$' },
+      'EUR': { name: 'Euro', file: 'fx.json', field: 'eur_try', unit: '€' },
+      'ALTIN': { name: 'Gram Altın', file: 'gold.json', field: 'price_try', unit: 'gr' },
+      'BIST100': { name: 'BIST 100', file: 'bist.json', field: 'bist100', unit: 'puan' },
+      'GYO': { name: 'GYO Endeksi', file: 'bist.json', field: 'gyox', unit: 'puan' },
+      'KFE': { name: 'Konut Fiyat Endeksi', file: 'kfe.json', field: 'index', unit: 'endeks' },
+    };
+
+    let cache = {};
+    const todayStr = new Date().toISOString().split('T')[0];
+    document.getElementById('sell_date').value = todayStr;
+    const oneYearAgo = new Date(); oneYearAgo.setFullYear(oneYearAgo.getFullYear()-1);
+    document.getElementById('buy_date').value = oneYearAgo.toISOString().split('T')[0];
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+      localStorage.setItem('theme', html.getAttribute('data-theme'));
+    }
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+
+    async function loadJson(file) {
+      if (cache[file]) return cache[file];
+      const res = await fetch(DATA_BASE + file);
+      if (!res.ok) throw new Error(file + ' yüklenemedi');
+      cache[file] = await res.json();
+      return cache[file];
+    }
+
+    async function fetchLiveFx() {
+      try {
+        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const data = await res.json();
+        const usd_try = 1 / (data.rates.TRY || 1);
+        const eur_res = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
+        const eur_data = await eur_res.json();
+        const eur_try = 1 / (eur_data.rates.TRY || 1);
+        return { usd_try, eur_try, date: todayStr };
+      } catch (e) { return null; }
+    }
+
+    function nearestMonth(dateStr, series) {
+      const target = new Date(dateStr);
+      let best = null, bestDiff = Infinity;
+      for (const row of series) {
+        const d = new Date(row.date);
+        const diff = Math.abs(d - target);
+        if (diff < bestDiff) { bestDiff = diff; best = row; }
       }
+      return best;
+    }
 
-      // Load saved theme
-      document.addEventListener('DOMContentLoaded', () => {
-        const savedTheme = localStorage.getItem('theme') || 'dark';
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      });
+    function valueAt(series, field, dateStr) {
+      const row = nearestMonth(dateStr, series);
+      return row ? parseFloat(row[field]) : null;
+    }
 
-      // Original JavaScript functionality (unchanged)
-      document.addEventListener('DOMContentLoaded', () => {
-        // Gerekli DOM elemanlarını seçme
-        const form = document.getElementById('analysis-form');
-        const alisTarihiInput = document.getElementById('alis-tarihi');
-        const alisFiyatiInput = document.getElementById('alis-fiyati');
-        const satisTarihiInput = document.getElementById('satis-tarihi');
-        const satisFiyatiInput = document.getElementById('satis-fiyati');
-        const loader = document.getElementById('loader');
-        const resultsContainer = document.getElementById('results-container');
-        const notificationArea = document.getElementById('notification-area');
-        const analyzeButton = document.getElementById('analyze-button');
+    function growth(v0, v1) { return v0 ? v1 / v0 : NaN; }
+    function yearsBetween(d0, d1) { return (new Date(d1) - new Date(d0)) / (365.25 * 24 * 3600 * 1000); }
+    function cagr(total, years) { return total > -1 && years > 0 ? Math.pow(1 + total, 1 / years) - 1 : null; }
+    function fmtMoney(n) { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(n || 0); }
+    function fmtPct(n) { return (n === null || isNaN(n)) ? '—' : (n * 100).toFixed(2) + '%'; }
 
-        const apiCache = new Map();
-        const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
-
-        // Tarih inputlarına varsayılan değerler ata ve gelecekteki tarihleri engelle
-        const today = new Date();
-        const todayString = today.toISOString().split('T')[0];
-
-        satisTarihiInput.value = todayString;
-        alisTarihiInput.setAttribute('max', todayString);
-        satisTarihiInput.setAttribute('max', todayString);
-
-        const oneYearAgo = new Date();
-        oneYearAgo.setFullYear(today.getFullYear() - 1);
-        const oneYearAgoString = oneYearAgo.toISOString().split('T')[0];
-        alisTarihiInput.value = oneYearAgoString;
-
-        const API_URL =
-          'https://script.google.com/macros/s/AKfycbxTWH3iXuFQRUo-ZpXAWy4y5SiPXwytJPDtsKI7LtbmdvhteAUMWRPdFp_IdjC58CGo/exec';
-
-        // Form gönderildiğinde çalışacak fonksiyon
-        form.addEventListener('submit', (event) => {
-          event.preventDefault();
-
-          // Girdi değerlerini al
-          const alisTarihi = alisTarihiInput.value;
-          const alisFiyati = parseFloat(alisFiyatiInput.value);
-          const satisTarihi = satisTarihiInput.value;
-          const satisFiyati = parseFloat(satisFiyatiInput.value);
-
-          // Girdi doğrulama
-          if (!alisTarihi || !alisFiyati || !satisTarihi || !satisFiyati) {
-            alert('Lütfen tüm alanları doldurun.');
-            return;
-          }
-
-          if (alisFiyati <= 0 || satisFiyati <= 0) {
-            alert('Fiyatlar sıfırdan büyük olmalıdır.');
-            return;
-          }
-
-          if (new Date(satisTarihi) < new Date(alisTarihi)) {
-            alert('Satış tarihi, alış tarihinden önce olamaz.');
-            return;
-          }
-
-          // Tarihleri hafta sonu için düzelt
-          notificationArea.style.display = 'none';
-          const adjustedAlisDate = getPreviousWeekday(new Date(alisTarihi + 'T12:00:00Z'));
-          const adjustedSatisDate = getPreviousWeekday(new Date(satisTarihi + 'T12:00:00Z'));
-
-          const adjustedAlisTarihiString = adjustedAlisDate.toISOString().split('T')[0];
-          const adjustedSatisTarihiString = adjustedSatisDate.toISOString().split('T')[0];
-
-          // Eğer tarih değiştiyse kullanıcıyı bilgilendir ve inputları güncelle
-          if (alisTarihi !== adjustedAlisTarihiString || satisTarihi !== adjustedSatisTarihiString) {
-            notificationArea.textContent =
-              'Not: Seçtiğiniz tarih hafta sonuna denk geldiği için analiz en yakın iş gününe göre yapılmıştır.';
-            notificationArea.style.display = 'block';
-            alisTarihiInput.value = adjustedAlisTarihiString;
-            satisTarihiInput.value = adjustedSatisTarihiString;
-          }
-
-          // API'ye istek gönderme
-          fetchDataAndAnalyze(adjustedAlisTarihiString, alisFiyati, adjustedSatisTarihiString, satisFiyati);
-        });
-
-        function getPreviousWeekday(date) {
-          const day = date.getUTCDay();
-          if (day === 0) {
-            date.setUTCDate(date.getUTCDate() - 2);
-          } else if (day === 6) {
-            date.setUTCDate(date.getUTCDate() - 1);
-          }
-          return date;
-        }
-
-        async function fetchDataAndAnalyze(alisTarihi, alisFiyati, satisTarihi, satisFiyati) {
-          analyzeButton.disabled = true;
-          analyzeButton.textContent = 'Analiz Ediliyor...';
-
-          loader.classList.remove('hidden');
-          resultsContainer.innerHTML = '';
-
-          const cacheKey = `${alisTarihi}-${satisTarihi}`;
-          const cachedData = apiCache.get(cacheKey);
-
-          if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
-            console.log('Using cached data');
-            displayResults(cachedData.data, alisFiyati, satisFiyati);
-            loader.classList.add('hidden');
-            analyzeButton.disabled = false;
-            analyzeButton.textContent = 'Analiz Et';
-            return;
-          }
-
-          const formData = new FormData();
-          formData.append('alisTarihi', formatDateForAPI(alisTarihi));
-          formData.append('satisTarihi', formatDateForAPI(satisTarihi));
-
-          try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
-
-            const response = await fetch(API_URL, {
-              method: 'POST',
-              body: formData,
-              redirect: 'follow',
-              signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-              throw new Error(`API Hatası: ${response.statusText}`);
-            }
-
-            const data = await response.json();
-
-            apiCache.set(cacheKey, {
-              data: data,
-              timestamp: Date.now(),
-            });
-
-            displayResults(data, alisFiyati, satisFiyati);
-          } catch (error) {
-            console.error('API çağrısı sırasında bir hata oluştu:', error);
-            if (error.name === 'AbortError') {
-              resultsContainer.innerHTML = `<p class="text-error">İstek zaman aşımına uğradı. Lütfen tekrar deneyin.</p>`;
-            } else {
-              resultsContainer.innerHTML = `<p class="text-error">Veriler alınırken bir hata oluştu. Lütfen daha sonra tekrar deneyin.</p>`;
-            }
-          } finally {
-            loader.classList.add('hidden');
-            analyzeButton.disabled = false;
-            analyzeButton.textContent = 'Analiz Et';
-          }
-        }
-
-        function displayResults(data, alisFiyati, satisFiyati) {
-          resultsContainer.innerHTML = '';
-
-          if (!data.alis_verileri || !data.satis_verileri) {
-            resultsContainer.innerHTML = `<p class="text-error">API'den eksik veri geldi. Seçtiğiniz tarihler için veri bulunamıyor olabilir.</p>`;
-            return;
-          }
-
-          // Nominal kar hesaplama
-          const nominalKar = satisFiyati - alisFiyati;
-          const nominalKarYuzde = ((satisFiyati - alisFiyati) / alisFiyati) * 100;
-          const nominalKarClass = nominalKar >= 0 ? 'positive' : 'negative';
-          const nominalKarPrefix = nominalKar >= 0 ? '+' : '';
-
-          // Nominal kar kartını oluştur
-          const nominalKarCard = document.createElement('div');
-          nominalKarCard.className = 'result-card';
-          nominalKarCard.style.border = '2px solid var(--neon-green)';
-          nominalKarCard.style.background = 'linear-gradient(135deg, rgba(0, 255, 136, 0.1) 0%, rgba(0, 255, 136, 0.05) 100%)';
-          nominalKarCard.innerHTML = `
-            <h3>💰 Nominal Kar/Zarar (TL)</h3>
-            <p>Alış Fiyatı: <strong>${formatNumber(alisFiyati, 'TL')} TL</strong></p>
-            <p>Satış Fiyatı: <strong>${formatNumber(satisFiyati, 'TL')} TL</strong></p>
-            <p class="${nominalKar >= 0 ? 'text-success' : 'text-error'}">
-                ${nominalKar >= 0 ? 'Nominal Kâr' : 'Nominal Zarar'}: <strong>${nominalKarPrefix}${formatNumber(nominalKar, 'TL')} TL</strong>
-            </p>
-            <div class="performance-badge ${nominalKarClass}">
-                ${nominalKarPrefix}${nominalKarYuzde.toFixed(2)}% ${nominalKar >= 0 ? 'Kazanç' : 'Kayıp'}
-            </div>
-          `;
-          resultsContainer.appendChild(nominalKarCard);
-
-          const assets = [
-            { key: 'Altın Ortalama', name: 'Altın', unit: 'gr Altın' },
-            { key: 'usd/tl', name: 'ABD Doları', unit: 'USD' },
-            { key: 'euro/tl', name: 'Euro', unit: 'EUR' },
-            { key: 'bist', name: 'BIST 100 Endeksi', unit: 'Puan' },
-            { key: 'gyo endeks', name: 'GYO Endeksi', unit: 'Puan' },
-            { key: 'TÜFE ENDEKS', name: 'Enflasyon (TÜFE)', unit: 'TL (Enflasyona Göre)' },
-          ];
-
-          const fragment = document.createDocumentFragment();
-
-          assets.forEach((asset) => {
-            const alisKuru = data.alis_verileri[asset.key];
-            const satisKuru = data.satis_verileri[asset.key];
-
-            if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
-              return;
-            }
-
-            let alisDegeri, satisDegeri;
-
-            if (asset.key === 'TÜFE ENDEKS') {
-              alisDegeri = alisFiyati;
-              satisDegeri = satisFiyati * (alisKuru / satisKuru);
-            } else {
-              alisDegeri = alisFiyati / alisKuru;
-              satisDegeri = satisFiyati / satisKuru;
-            }
-
-            const karZarar = satisDegeri - alisDegeri;
-            const karZararClass = karZarar >= 0 ? 'text-success' : 'text-error';
-            const karZararPrefix = karZarar >= 0 ? '+' : '';
-
-            const yuzdelikDegisim = ((satisDegeri - alisDegeri) / alisDegeri) * 100;
-            const yuzdelikPrefix = yuzdelikDegisim >= 0 ? '+' : '';
-            const yuzdelikClass = yuzdelikDegisim >= 0 ? 'positive' : 'negative';
-
-            const cardDiv = document.createElement('div');
-            cardDiv.className = 'result-card';
-            cardDiv.innerHTML = `
-                        <h3>${asset.name} Karşılığı Performans</h3>
-                        <p>Alış Değeri: <strong>${formatNumber(alisDegeri, asset.key)} ${asset.unit}</strong></p>
-                        <p>Satış Değeri: <strong>${formatNumber(satisDegeri, asset.key)} ${asset.unit}</strong></p>
-                        <p class="${karZararClass}">
-                            ${karZarar >= 0 ? 'Kâr' : 'Zarar'}: <strong>${karZararPrefix}${formatNumber(karZarar, asset.key)} ${asset.unit}</strong>
-                        </p>
-                        <div class="performance-badge ${yuzdelikClass}">
-                            ${yuzdelikPrefix}${yuzdelikDegisim.toFixed(2)}% ${yuzdelikDegisim >= 0 ? 'Kazanç' : 'Kayıp'}
-                        </div>
-                    `;
-            fragment.appendChild(cardDiv);
-          });
-
-          const breakEvenSection = document.createElement('div');
-          breakEvenSection.className = 'section-header';
-          breakEvenSection.innerHTML = `
-                    <h2>Başa Baş Noktaları</h2>
-                    <p>Aşağıdaki değerler, yatırımınızın her bir varlık karşısında başa baş çıkması için gereken minimum satış fiyatlarını göstermektedir.</p>
-                `;
-          fragment.appendChild(breakEvenSection);
-
-          assets.forEach((asset) => {
-            const alisKuru = data.alis_verileri[asset.key];
-            const satisKuru = data.satis_verileri[asset.key];
-
-            if (!alisKuru || !satisKuru || alisKuru === 0 || satisKuru === 0) {
-              return;
-            }
-
-            let breakEvenPrice;
-            let explanation;
-
-            if (asset.key === 'TÜFE ENDEKS') {
-              // Enflasyon için başa baş: alış fiyatı * (satış TÜFE / alış TÜFE)
-              breakEvenPrice = alisFiyati * (satisKuru / alisKuru);
-              explanation = `Enflasyona karşı değer kaybetmemek için minimum ${formatNumber(breakEvenPrice)} TL'ye satış yapmalısınız.`;
-            } else {
-              // Diğer varlıklar için başa baş: alış fiyatı * (satış kuru / alış kuru)
-              breakEvenPrice = alisFiyati * (satisKuru / alisKuru);
-              explanation = `${asset.name} karşısında başa baş çıkmak için minimum ${formatNumber(breakEvenPrice)} TL'ye satış yapmalısınız.`;
-            }
-
-            const currentPrice = parseFloat(satisFiyatiInput.value) || 0;
-            const isAboveBreakEven = currentPrice >= breakEvenPrice;
-            const statusClass = isAboveBreakEven ? 'positive' : 'warning';
-            const cardClass = isAboveBreakEven ? 'above' : 'below';
-            const statusText = isAboveBreakEven ? 'Başa Baş Üzerinde' : 'Başa Baş Altında';
-            const statusIcon = isAboveBreakEven ? '✓' : '⚠';
-
-            const breakEvenCard = document.createElement('div');
-            breakEvenCard.className = `breakeven-card ${cardClass}`;
-            breakEvenCard.innerHTML = `
-                        <h3>${asset.name} Başa Baş Noktası</h3>
-                        <p><strong>Başa Baş Fiyatı:</strong> ${formatNumber(breakEvenPrice)} TL</p>
-                        <p><strong>Mevcut Satış Fiyatı:</strong> ${formatNumber(currentPrice)} TL</p>
-                        <div class="status-indicator ${statusClass}">
-                            ${statusIcon} ${statusText}
-                        </div>
-                        <div class="explanation-box">
-                            ${explanation}
-                        </div>
-                    `;
-            fragment.appendChild(breakEvenCard);
-          });
-
-          resultsContainer.appendChild(fragment);
-        }
-
-        function formatDateForAPI(dateString) {
-          const [year, month, day] = dateString.split('-');
-          return `${day}.${month}.${year}`;
-        }
-
-        function formatNumber(number, key) {
-          const options = {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          };
-          if (key === 'TÜFE ENDEKS') {
-            return number.toLocaleString('tr-TR', options);
-          }
-          return number.toLocaleString('tr-TR', options);
-        }
-      });
-    </script>
-
-    <!-- PWA Setup (Unchanged from original) -->
-    <script>
-      // 1. Manifest dosyasını dinamik olarak oluştur ve bağla
-      const manifest = {
-        short_name: 'Reel Getiri',
-        name: 'Reel Getiri Analiz Platformu',
-        start_url: '.',
-        display: 'standalone',
-        theme_color: '#00ff88',
-        background_color: '#0a0a0a',
-        description: 'Gayrimenkul yatırımlarınızın reel getirisini analiz eden PWA.',
-      };
+    document.getElementById('calc-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('error').classList.add('hidden');
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('loader').classList.remove('hidden');
+      document.getElementById('submit-btn').disabled = true;
 
       try {
-        const manifestString = JSON.stringify(manifest);
-        const manifestBlob = new Blob([manifestString], { type: 'application/json' });
-        const manifestUrl = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifest-link').setAttribute('href', manifestUrl);
-      } catch (error) {
-        console.warn('Manifest oluşturulamadı:', error);
-      }
+        const buy = document.getElementById('buy_date').value;
+        const sell = document.getElementById('sell_date').value;
+        if (sell <= buy) throw new Error('Satış tarihi alım tarihinden sonra olmalı.');
+        const A = parseFloat(document.getElementById('buy_price').value);
+        const S = parseFloat(document.getElementById('sell_price').value);
+        const sqm = parseFloat(document.getElementById('sqm').value) || null;
+        const tapu = parseFloat(document.getElementById('tapu_pct').value) / 100;
+        const komisyon = parseFloat(document.getElementById('komisyon_pct').value) / 100;
+        const rentalMonthly = parseFloat(document.getElementById('rental_monthly').value) || 0;
+        const rentalCost = parseFloat(document.getElementById('rental_cost_pct').value) / 100;
 
-      // 2. Service Worker'ı kaydet
-      if ('serviceWorker' in navigator) {
-        const swCode = `
-                const CACHE_NAME = 'reel-getiri-analiz-v3';
-                const urlsToCache = ['/'];
+        const totalBuy = A * (1 + tapu + komisyon);
+        const netSell = S * (1 - tapu - komisyon);
+        const months = Math.max(1, Math.round((new Date(sell) - new Date(buy)) / (30 * 24 * 3600 * 1000)));
+        const rentalIncome = rentalMonthly * (1 - rentalCost) * months;
+        const totalInflow = netSell + rentalIncome;
 
-                self.addEventListener('install', event => {
-                  event.waitUntil(
-                    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
-                  );
-                });
+        const [fx, gold, bist, cpi, kfe] = await Promise.all([
+          loadJson('fx.json'), loadJson('gold.json'), loadJson('bist.json'), loadJson('cpi.json'), loadJson('kfe.json')
+        ]);
 
-                self.addEventListener('fetch', event => {
-                  event.respondWith(
-                    caches.match(event.request).then(response => {
-                      return response || fetch(event.request);
-                    })
-                  );
-                });
+        let liveFx = null;
+        if (new Date(sell) > new Date(fx[fx.length-1].date)) liveFx = await fetchLiveFx();
 
-                self.addEventListener('activate', event => {
-                    const cacheWhitelist = [CACHE_NAME];
-                    event.waitUntil(
-                        caches.keys().then(cacheNames => {
-                            return Promise.all(
-                                cacheNames.map(cacheName => {
-                                    if (cacheWhitelist.indexOf(cacheName) === -1) {
-                                        return caches.delete(cacheName);
-                                    }
-                                })
-                            );
-                        })
-                    );
-                });
-            `;
+        const cpi0 = valueAt(cpi, 'cpi_index', buy);
+        const cpi1 = liveFx ? null : valueAt(cpi, 'cpi_index', sell);
+        const fxBuy = valueAt(fx, 'usd_try', buy);
+        const fxSell = liveFx ? liveFx.usd_try : valueAt(fx, 'usd_try', sell);
+        const eurBuy = valueAt(fx, 'eur_try', buy);
+        const eurSell = liveFx ? liveFx.eur_try : valueAt(fx, 'eur_try', sell);
 
-        try {
-          const swBlob = new Blob([swCode], { type: 'application/javascript' });
-          const swUrl = URL.createObjectURL(swBlob);
+        const nominalReturn = (totalInflow - totalBuy) / totalBuy;
+        const realCpi1 = cpi1 || cpi0;
+        const realReturn = (totalInflow - totalBuy * (realCpi1 / cpi0)) / (totalBuy * (realCpi1 / cpi0));
+        const yrs = yearsBetween(buy, sell);
+        const nominalCagr = cagr(nominalReturn, yrs);
+        const realCagr = cagr(realReturn, yrs);
 
-          window.addEventListener('load', () => {
-            navigator.serviceWorker
-              .register(swUrl)
-              .then((registration) => {
-                console.log('ServiceWorker kaydı başarılı: ', registration.scope);
-              })
-              .catch((error) => {
-                console.log('ServiceWorker kaydı başarısız: ', error);
-              });
-          });
-        } catch (error) {
-          console.warn('Service Worker oluşturulamadı:', error);
+        const usdBaseReturn = ((netSell / fxSell) - (totalBuy / fxBuy)) / (totalBuy / fxBuy);
+        const eurBaseReturn = ((netSell / eurSell) - (totalBuy / eurBuy)) / (totalBuy / eurBuy);
+
+        const alternatives = {};
+        for (const [key, meta] of Object.entries(assetsMeta)) {
+          const data = await loadJson(meta.file);
+          let v0 = valueAt(data, meta.field, buy);
+          let v1 = valueAt(data, meta.field, sell);
+          if (!v0 || !v1) continue;
+          const g = growth(v0, v1) - 1;
+          alternatives[key] = { name: meta.name, return: g, final: totalBuy * (1 + g), unit: meta.unit };
         }
-      }
-    </script>
-  
 
-</body></html>
+        let bestAlt = null, bestVal = -Infinity;
+        for (const [k, v] of Object.entries(alternatives)) {
+          if (v.final > bestVal) { bestVal = v.final; bestAlt = v; }
+        }
+        const opportunityCost = bestAlt ? bestVal - totalInflow : null;
+        const breakEven = totalBuy / (1 - tapu - komisyon);
+
+        render({ totalBuy, netSell, rentalIncome, totalInflow, nominalReturn, realReturn, nominalCagr, realCagr, usdBaseReturn, eurBaseReturn, alternatives, bestAlt, opportunityCost, breakEven, sqm, months });
+      } catch (err) {
+        document.getElementById('error').textContent = err.message;
+        document.getElementById('error').classList.remove('hidden');
+      } finally {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('submit-btn').disabled = false;
+      }
+    });
+
+    function render(d) {
+      const grid = document.getElementById('kpi-grid');
+      const profit = d.totalInflow - d.totalBuy;
+      const profitClass = profit >= 0 ? 'positive' : 'negative';
+      grid.innerHTML = `
+        <div class="kpi"><span class="kpi-label">Net Kâr / Zarar</span><strong class="kpi-value ${profitClass}">${fmtMoney(profit)}</strong><span class="kpi-sub">${fmtPct(d.nominalReturn)} nominal</span></div>
+        <div class="kpi"><span class="kpi-label">Nominal CAGR</span><strong class="kpi-value ${d.nominalCagr >= 0 ? 'positive' : 'negative'}">${fmtPct(d.nominalCagr)}</strong></div>
+        <div class="kpi"><span class="kpi-label">Reel CAGR</span><strong class="kpi-value ${d.realCagr >= 0 ? 'positive' : 'negative'}">${fmtPct(d.realCagr)}</strong></div>
+        <div class="kpi"><span class="kpi-label">Fırsat Maliyeti</span><strong class="kpi-value ${d.opportunityCost > 0 ? 'negative' : 'positive'}">${fmtMoney(d.opportunityCost || 0)}</strong><span class="kpi-sub">${d.bestAlt ? 'En iyi: ' + d.bestAlt.name : ''}</span></div>
+      `;
+
+      document.getElementById('summary-list').innerHTML = `
+        <li><span>Toplam maliyet</span><strong>${fmtMoney(d.totalBuy)}</strong></li>
+        <li><span>Net satış geliri</span><strong>${fmtMoney(d.netSell)}</strong></li>
+        <li><span>Kira geliri</span><strong>${fmtMoney(d.rentalIncome)}</strong></li>
+        <li><span>Elde tutma süresi</span><strong>${d.months} ay</strong></li>
+        <li><span>USD bazlı getiri</span><strong>${fmtPct(d.usdBaseReturn)}</strong></li>
+        <li><span>EUR bazlı getiri</span><strong>${fmtPct(d.eurBaseReturn)}</strong></li>
+        ${d.sqm ? `
+          <li><span>Alış m² fiyatı</span><strong>${fmtMoney(d.totalBuy / d.sqm)}</strong></li>
+          <li><span>Satış m² fiyatı</span><strong>${fmtMoney(d.netSell / d.sqm)}</strong></li>
+        ` : ''}
+      `;
+
+      const tbody = document.querySelector('#alt-table tbody');
+      const rows = [['Gayrimenkul', d.nominalReturn, d.totalInflow], ...Object.entries(d.alternatives).map(([k, v]) => [v.name, v.return, v.final])];
+      tbody.innerHTML = rows.map(([name, ret, val]) => `
+        <tr><td>${name}</td><td class="${ret >= 0 ? 'positive' : 'negative'}">${fmtPct(ret)}</td><td>${fmtMoney(val)}</td></tr>
+      `).join('');
+
+      document.getElementById('break-even').textContent = fmtMoney(d.breakEven);
+      document.getElementById('break-even').className = d.netSell >= d.breakEven ? 'positive' : 'negative';
+      document.getElementById('results').classList.remove('hidden');
+      window.scrollTo({ top: document.getElementById('results').offsetTop - 20, behavior: 'smooth' });
+    }
+  </script>
+</body>
+</html>
