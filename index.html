@@ -185,14 +185,14 @@
   <script>
     const DATA_BASE = 'data/';
     const ASSETS = [
-      { key: 'TL', name: 'Türk Lirası', file: null, field: null, unit: '₺', isBase: true },
-      { key: 'USD', name: 'ABD Doları', file: 'fx.json', field: 'usd_try', unit: '$' },
-      { key: 'EUR', name: 'Euro', file: 'fx.json', field: 'eur_try', unit: '€' },
-      { key: 'ALTIN', name: 'Gram Altın', file: 'gold.json', field: 'price_try', unit: 'gr' },
-      { key: 'BIST100', name: 'BIST 100', file: 'bist.json', field: 'bist100', unit: 'puan' },
-      { key: 'GYO', name: 'GYO Endeksi', file: 'bist.json', field: 'gyox', unit: 'puan' },
-      { key: 'KFE', name: 'Konut Fiyat Endeksi', file: 'kfe.json', field: 'index', unit: 'endeks' },
-      { key: 'TUFE', name: 'Enflasyon (TÜFE)', file: 'cpi.json', field: 'cpi_index', unit: '₺ (enflasyon bazlı)' },
+      { key: 'TL', name: 'Türk Lirası', file: null, field: null, unit: '₺', isBase: true, rateLabel: '' },
+      { key: 'USD', name: 'ABD Doları', file: 'fx.json', field: 'usd_try', unit: '$', rateLabel: 'kur' },
+      { key: 'EUR', name: 'Euro', file: 'fx.json', field: 'eur_try', unit: '€', rateLabel: 'kur' },
+      { key: 'ALTIN', name: 'Gram Altın', file: 'gold.json', field: 'price_try', unit: 'gr', rateLabel: 'fiyat' },
+      { key: 'BIST100', name: 'BIST 100', file: 'bist.json', field: 'bist100', unit: 'puan', rateLabel: 'endeks' },
+      { key: 'GYO', name: 'GYO Endeksi', file: 'bist.json', field: 'gyox', unit: 'puan', rateLabel: 'endeks' },
+      { key: 'KFE', name: 'Konut Fiyat Endeksi', file: 'kfe.json', field: 'index', unit: 'endeks', rateLabel: 'endeks' },
+      { key: 'TUFE', name: 'Enflasyon (TÜFE)', file: 'cpi.json', field: 'cpi_index', unit: '₺ (enflasyon bazlı)', rateLabel: 'endeks' },
     ];
 
     let cache = {};
@@ -221,8 +221,8 @@
         const usd = await (await fetch('https://api.exchangerate-api.com/v4/latest/USD')).json();
         const eur = await (await fetch('https://api.exchangerate-api.com/v4/latest/EUR')).json();
         return {
-          usd_try: 1 / (usd.rates.TRY || 1),
-          eur_try: 1 / (eur.rates.TRY || 1),
+          usd_try: usd.rates.TRY || 1,
+          eur_try: eur.rates.TRY || 1,
           date: todayStr
         };
       } catch (e) { return null; }
@@ -292,8 +292,10 @@
             buyRate = valAt(datasets[asset.file], asset.field, buy);
             sellRate = valAt(datasets[asset.file], asset.field, sell);
           } else {
-            buyRate = liveFx && asset.key === 'USD' ? liveFx.usd_try : valAt(datasets[asset.file], asset.field, buy);
-            sellRate = liveFx && asset.key === 'USD' ? liveFx.usd_try : (liveFx && asset.key === 'EUR' ? liveFx.eur_try : valAt(datasets[asset.file], asset.field, sell));
+            buyRate = valAt(datasets[asset.file], asset.field, buy);
+            if (liveFx && asset.key === 'USD') sellRate = liveFx.usd_try;
+            else if (liveFx && asset.key === 'EUR') sellRate = liveFx.eur_try;
+            else sellRate = valAt(datasets[asset.file], asset.field, sell);
           }
           if (!buyRate || !sellRate) continue;
 
@@ -353,7 +355,7 @@
             <h3>${r.name}</h3>
             <div class="big ${r.profit >= 0 ? 'positive' : 'negative'}">${sign}${fmtNum(r.profit)} ${r.unit}</div>
             <div class="detail">
-              Alış kuru: ${fmtNum(r.buyRate, 4)} • Satış kuru: ${fmtNum(r.sellRate, 4)}<br>
+              ${r.rateLabel ? `Alış ${r.rateLabel}: ${fmtNum(r.buyRate, 4)} • Satış ${r.rateLabel}: ${fmtNum(r.sellRate, 4)}<br>` : ''}
               Alış: ${fmtNum(r.buyValue)} ${r.unit}<br>
               Satış: ${fmtNum(r.sellValue)} ${r.unit}<br>
               Yıllık: ${fmtPct(r.cagr)}<br>
