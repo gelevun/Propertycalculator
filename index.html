@@ -297,13 +297,15 @@
           }
           if (!buyRate || !sellRate) continue;
 
+          // Ana hesaplama: alis fiyati / alis kuru, satis fiyati / satis kuru
           let buyValue, sellValue;
           if (asset.key === 'TUFE') {
-            buyValue = totalCost;
-            sellValue = totalInflow * (buyRate / sellRate);
+            // TÜFE ile reel deger: satis fiyatinin alis TÜFE'sine göre degeri
+            buyValue = buyPrice;
+            sellValue = sellPrice * (buyRate / sellRate);
           } else {
-            buyValue = totalCost / buyRate;
-            sellValue = totalInflow / sellRate;
+            buyValue = buyPrice / buyRate;
+            sellValue = sellPrice / sellRate;
           }
           const profit = sellValue - buyValue;
           const returnPct = profit / buyValue;
@@ -311,8 +313,8 @@
           const cagrVal = cagr(returnPct, years);
 
           // Eger bu varlikta kalsaydiniz, satis tarihinde ne kadar TL'niz olurdu?
-          const hypotheticalTL = asset.key === 'TUFE' ? sellValue : buyValue * sellRate;
-          const profitTL = hypotheticalTL - totalCost;
+          const hypotheticalTL = asset.key === 'TUFE' ? sellValue : (buyPrice / buyRate) * sellRate;
+          const profitTL = hypotheticalTL - buyPrice;
 
           results.push({ ...asset, buyRate, sellRate, buyValue, sellValue, profit, returnPct, cagr: cagrVal, profitTL, hypotheticalTL, years });
         }
@@ -351,6 +353,7 @@
             <h3>${r.name}</h3>
             <div class="big ${r.profit >= 0 ? 'positive' : 'negative'}">${sign}${fmtNum(r.profit)} ${r.unit}</div>
             <div class="detail">
+              Alış kuru: ${fmtNum(r.buyRate, 4)} • Satış kuru: ${fmtNum(r.sellRate, 4)}<br>
               Alış: ${fmtNum(r.buyValue)} ${r.unit}<br>
               Satış: ${fmtNum(r.sellValue)} ${r.unit}<br>
               Yıllık: ${fmtPct(r.cagr)}<br>
@@ -362,20 +365,27 @@
       }).join('');
 
       document.getElementById('summary-list').innerHTML = `
-        <li><span>Toplam maliyet</span><strong>${fmtMoney(d.totalCost)}</strong></li>
-        <li><span>Net satış geliri</span><strong>${fmtMoney(d.netProceeds)}</strong></li>
+        <li><span>Alış fiyatı</span><strong>${fmtMoney(d.buyPrice)}</strong></li>
+        <li><span>Satış fiyatı</span><strong>${fmtMoney(d.sellPrice)}</strong></li>
+        <li><span>Tapu + komisyon</span><strong>${fmtMoney(d.totalCost - d.buyPrice)}</strong></li>
+        <li><span>Net satış geliri (masraflı)</span><strong>${fmtMoney(d.netProceeds)}</strong></li>
         <li><span>Kira geliri</span><strong>${fmtMoney(d.rentalIncome)}</strong></li>
         <li><span>Elde tutma süresi</span><strong>${d.months} ay / ${(d.months/12).toFixed(1)} yıl</strong></li>
         <li><span>Enflasyon bazlı reel getiri</span><strong>${fmtPct(d.results.find(r=>r.key==='TUFE').returnPct)}</strong></li>
         ${d.sqm ? `
-          <li><span>Alış m² fiyatı</span><strong>${fmtMoney(d.totalCost/d.sqm)}</strong></li>
-          <li><span>Satış m² fiyatı</span><strong>${fmtMoney(d.netProceeds/d.sqm)}</strong></li>
+          <li><span>Alış m² fiyatı</span><strong>${fmtMoney(d.buyPrice/d.sqm)}</strong></li>
+          <li><span>Satış m² fiyatı</span><strong>${fmtMoney(d.sellPrice/d.sqm)}</strong></li>
           <li><span>m² başına kâr</span><strong>${fmtMoney(tl.profit/d.sqm)}</strong></li>
         ` : ''}
       `;
 
       document.getElementById('breakeven-list').innerHTML = d.results.filter(r => !r.isBase).map(r => {
-        const bePrice = d.buyPrice * growth(r.buyRate, r.sellRate);
+        let bePrice;
+        if (r.key === 'TUFE') {
+          bePrice = d.buyPrice * (r.sellRate / r.buyRate);
+        } else {
+          bePrice = d.buyPrice * (r.sellRate / r.buyRate);
+        }
         const status = d.sellPrice >= bePrice ? 'Üzerinde' : 'Altında';
         const color = d.sellPrice >= bePrice ? 'positive' : 'negative';
         return `<li><span>${r.name}</span><strong class="${color}">${fmtMoney(bePrice)} <small>(${status})</small></strong></li>`;
