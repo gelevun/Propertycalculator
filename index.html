@@ -315,7 +315,7 @@
           const cagrVal = cagr(returnPct, years);
 
           // Eger bu varlikta kalsaydiniz, satis tarihinde ne kadar TL'niz olurdu?
-          const hypotheticalTL = asset.key === 'TUFE' ? sellValue : (buyPrice / buyRate) * sellRate;
+          const hypotheticalTL = asset.key === 'TUFE' ? buyPrice * (sellRate / buyRate) : (buyPrice / buyRate) * sellRate;
           const profitTL = hypotheticalTL - buyPrice;
 
           results.push({ ...asset, buyRate, sellRate, buyValue, sellValue, profit, returnPct, cagr: cagrVal, profitTL, hypotheticalTL, years });
