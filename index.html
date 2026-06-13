@@ -1,134 +1,136 @@
 <!DOCTYPE html>
-<html lang="tr" data-theme="light">
+<html lang="tr" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Property Calculator — Reel Getiri Analizi</title>
-  <meta name="description" content="Gayrimenkul yatırımınızın reel getirisini, enflasyon ve alternatif yatırımlara karşı kolayca analiz edin.">
-  <meta name="theme-color" content="#10b981">
+  <meta name="description" content="Gayrimenkul yatırımınızı dolar, altın, borsa ve enflasyona karşı analiz edin.">
+  <meta name="theme-color" content="#0f172a">
   <link rel="manifest" href="manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f6f8fb;
-      --surface: #ffffff;
-      --text: #111827;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --primary: #10b981;
-      --primary-dark: #059669;
-      --danger: #ef4444;
-      --danger-bg: #fee2e2;
-      --warning: #f59e0b;
-      --shadow: 0 4px 24px rgba(0,0,0,0.06);
-      --radius: 16px;
-    }
-    [data-theme="dark"] {
       --bg: #0f172a;
       --surface: #1e293b;
+      --surface-hover: #334155;
       --text: #f8fafc;
       --muted: #94a3b8;
       --border: #334155;
       --primary: #34d399;
       --primary-dark: #10b981;
       --danger: #f87171;
-      --danger-bg: rgba(239,68,68,0.15);
-      --shadow: 0 4px 24px rgba(0,0,0,0.3);
+      --danger-bg: rgba(248,113,113,0.12);
+      --warning: #fbbf24;
+      --info: #60a5fa;
+      --shadow: 0 10px 40px rgba(0,0,0,0.35);
+      --radius: 20px;
+    }
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 40px rgba(0,0,0,0.08);
     }
     * { box-sizing: border-box; }
     body {
-      margin: 0;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
+      margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg); color: var(--text); line-height: 1.55;
       -webkit-font-smoothing: antialiased;
     }
-    .container { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
-    header { text-align: center; margin-bottom: 28px; position: relative; }
-    h1 { font-size: 2rem; margin: 0 0 6px; letter-spacing: -0.5px; }
-    .subtitle { color: var(--muted); font-size: 1rem; margin: 0; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 28px 16px; }
+    header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+    .brand h1 { font-size: 1.9rem; font-weight: 800; margin: 0; letter-spacing: -0.6px; }
+    .brand p { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; }
     .theme-toggle {
-      position: absolute; top: 0; right: 0;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 8px 12px; cursor: pointer;
-      font-size: 1.1rem; box-shadow: var(--shadow);
+      background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+      padding: 10px 14px; cursor: pointer; font-size: 1.1rem; box-shadow: var(--shadow);
     }
     .card {
-      background: var(--surface); border-radius: var(--radius);
-      box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 20px;
+      transition: transform .2s, box-shadow .2s;
     }
-    .form-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;
-    }
-    label {
-      display: flex; flex-direction: column; gap: 6px;
-      font-size: 0.875rem; font-weight: 500;
-    }
+    .card:hover { transform: translateY(-3px); }
+    .section-title { font-size: 1.15rem; font-weight: 700; margin: 0 0 18px; }
+    .form-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    label { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; }
     input, select {
-      padding: 12px 14px; border: 1px solid var(--border);
-      border-radius: 10px; font-size: 1rem; background: var(--surface);
-      color: var(--text); transition: border-color .15s, box-shadow .15s;
+      padding: 13px 14px; border: 1px solid var(--border); border-radius: 12px;
+      font-size: 1rem; background: var(--bg); color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
     }
-    input:focus, select:focus {
-      outline: none; border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
-    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(52,211,153,0.12); }
     .full { grid-column: 1 / -1; }
     .btn {
-      width: 100%; padding: 14px; border: none; border-radius: 10px;
-      background: var(--primary); color: #fff; font-size: 1rem;
-      font-weight: 600; cursor: pointer; transition: background .15s;
+      width: 100%; padding: 15px; border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: #0f172a; font-size: 1rem; font-weight: 700; cursor: pointer; transition: opacity .15s;
     }
-    .btn:hover { background: var(--primary-dark); }
-    .btn:disabled { opacity: .6; cursor: wait; }
+    .btn:hover { opacity: .92; }
+    .btn:disabled { opacity: .55; cursor: wait; }
     .hint { color: var(--muted); font-size: 0.8rem; margin-top: 4px; }
-    .kpi-grid {
-      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
-    }
-    .kpi {
-      background: var(--surface); border-radius: var(--radius);
-      box-shadow: var(--shadow); padding: 18px; text-align: center;
-    }
-    .kpi-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; }
-    .kpi-value { display: block; font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
-    .kpi-sub { font-size: 0.8rem; color: var(--muted); }
-    .positive { color: var(--primary-dark); }
-    .negative { color: var(--danger); }
-    [data-theme="dark"] .positive { color: var(--primary); }
-    .section-title { font-size: 1.25rem; font-weight: 700; margin: 0 0 14px; }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; text-align: center; }
+    .kpi-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .kpi-value { display: block; font-size: 1.55rem; font-weight: 800; margin-top: 6px; }
+    .kpi-sub { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+
+    .result-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .rcard { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; position: relative; overflow: hidden; transition: transform .2s; }
+    .rcard:hover { transform: translateY(-4px); }
+    .rcard::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+    .rcard.pos::before { background: var(--primary); }
+    .rcard.neg::before { background: var(--danger); }
+    .rcard.neu::before { background: var(--warning); }
+    .rcard h3 { font-size: 0.95rem; color: var(--muted); margin: 0 0 10px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .rcard .big { font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+    .rcard .detail { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; margin-top: 8px; }
+    .badge-pos { background: rgba(52,211,153,0.14); color: var(--primary); }
+    .badge-neg { background: var(--danger-bg); color: var(--danger); }
+
+    .insights { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
     .metric-list { list-style: none; padding: 0; margin: 0; }
-    .metric-list li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .metric-list li { display: flex; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
     .metric-list li:last-child { border-bottom: none; }
+
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
-    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
-    .badge-profit { background: rgba(16,185,129,0.12); color: var(--primary-dark); }
-    .badge-loss { background: var(--danger-bg); color: var(--danger); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 13px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 700; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
     .loader { text-align: center; padding: 40px; color: var(--muted); }
-    .spinner { width: 36px; height: 36px; margin: 0 auto 12px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    .spinner { width: 40px; height: 40px; margin: 0 auto 12px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .alert { padding: 14px; border-radius: 10px; margin-bottom: 16px; }
+    .alert { padding: 14px 16px; border-radius: 12px; margin-bottom: 16px; }
     .alert-error { background: var(--danger-bg); color: var(--danger); }
     .hidden { display: none !important; }
-    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 24px; }
-    @media (max-width: 640px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .kpi-grid { grid-template-columns: 1fr; }
-      h1 { font-size: 1.6rem; }
-      .theme-toggle { position: static; float: right; margin-bottom: 12px; }
+    footer { text-align: center; color: var(--muted); font-size: 0.8rem; margin-top: 28px; }
+
+    @media (max-width: 900px) {
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: repeat(2, 1fr); }
+      .insights { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .kpi-grid, .form-grid { grid-template-columns: 1fr; }
+      .brand h1 { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="wrap">
     <header>
-      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Tema değiştir">🌓</button>
-      <h1>Property Calculator</h1>
-      <p class="subtitle">Gayrimenkul yatırımınızın reel getirisini analiz edin</p>
+      <div class="brand">
+        <h1>Property Calculator</h1>
+        <p>Yatırımınızı dolar, altın, borsa ve enflasyona karşı analiz edin</p>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Tema">🌓</button>
     </header>
 
     <section class="card">
@@ -160,26 +162,38 @@
 
     <div id="results" class="hidden">
       <div class="kpi-grid" id="kpi-grid"></div>
-      <div class="card"><h2 class="section-title">Getiri Özeti</h2><ul class="metric-list" id="summary-list"></ul></div>
-      <div class="card"><h2 class="section-title">Alternatif Yatırımlar</h2><div class="table-wrap"><table id="alt-table"><thead><tr><th>Varlık</th><th>Getiri</th><th>Değer</th></tr></thead><tbody></tbody></table></div></div>
-      <div class="card"><h2 class="section-title">Başa Baş Noktası</h2><p id="break-even" style="font-size:1.4rem;font-weight:700;margin:0 0 8px;"></p><p class="hint">Satış fiyatınız bu değerin altındaysa zarar edersiniz.</p></div>
+
+      <div class="card"><h2 class="section-title">Varlık Bazlı Karşılaştırma</h2><div id="asset-cards" class="result-cards"></div></div>
+
+      <div class="insights">
+        <div class="card">
+          <h2 class="section-title">Özet Metrikler</h2>
+          <ul class="metric-list" id="summary-list"></ul>
+        </div>
+        <div class="card">
+          <h2 class="section-title">Başa Baş Satış Fiyatları</h2>
+          <ul class="metric-list" id="breakeven-list"></ul>
+        </div>
+      </div>
+
+      <div class="card"><h2 class="section-title">Detaylı Tablo</h2><div class="table-wrap"><table id="detail-table"><thead><tr><th>Varlık</th><th>Alış Değeri</th><th>Satış Değeri</th><th>Kâr/Zarar</th><th>Getiri</th><th>Yıllık (CAGR)</th></tr></thead><tbody></tbody></table></div></div>
     </div>
 
-    <footer>
-      <p>Veriler güncel ve örnek kaynaklardan sağlanır. Yatırım tavsiyesi değildir.</p>
-    </footer>
+    <footer><p>Veriler tarihsel ve anlık kaynaklardan sağlanır. Yatırım tavsiyesi değildir.</p></footer>
   </div>
 
   <script>
     const DATA_BASE = 'data/';
-    const assetsMeta = {
-      'USD': { name: 'ABD Doları', file: 'fx.json', field: 'usd_try', unit: '$' },
-      'EUR': { name: 'Euro', file: 'fx.json', field: 'eur_try', unit: '€' },
-      'ALTIN': { name: 'Gram Altın', file: 'gold.json', field: 'price_try', unit: 'gr' },
-      'BIST100': { name: 'BIST 100', file: 'bist.json', field: 'bist100', unit: 'puan' },
-      'GYO': { name: 'GYO Endeksi', file: 'bist.json', field: 'gyox', unit: 'puan' },
-      'KFE': { name: 'Konut Fiyat Endeksi', file: 'kfe.json', field: 'index', unit: 'endeks' },
-    };
+    const ASSETS = [
+      { key: 'TL', name: 'Türk Lirası', file: null, field: null, unit: '₺', isBase: true },
+      { key: 'USD', name: 'ABD Doları', file: 'fx.json', field: 'usd_try', unit: '$' },
+      { key: 'EUR', name: 'Euro', file: 'fx.json', field: 'eur_try', unit: '€' },
+      { key: 'ALTIN', name: 'Gram Altın', file: 'gold.json', field: 'price_try', unit: 'gr' },
+      { key: 'BIST100', name: 'BIST 100', file: 'bist.json', field: 'bist100', unit: 'puan' },
+      { key: 'GYO', name: 'GYO Endeksi', file: 'bist.json', field: 'gyox', unit: 'puan' },
+      { key: 'KFE', name: 'Konut Fiyat Endeksi', file: 'kfe.json', field: 'index', unit: 'endeks' },
+      { key: 'TUFE', name: 'Enflasyon (TÜFE)', file: 'cpi.json', field: 'cpi_index', unit: '₺ (enflasyon bazlı)' },
+    ];
 
     let cache = {};
     const todayStr = new Date().toISOString().split('T')[0];
@@ -192,7 +206,7 @@
       html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
       localStorage.setItem('theme', html.getAttribute('data-theme'));
     }
-    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');
+    document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'dark');
 
     async function loadJson(file) {
       if (cache[file]) return cache[file];
@@ -204,17 +218,17 @@
 
     async function fetchLiveFx() {
       try {
-        const res = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const data = await res.json();
-        const usd_try = 1 / (data.rates.TRY || 1);
-        const eur_res = await fetch('https://api.exchangerate-api.com/v4/latest/EUR');
-        const eur_data = await eur_res.json();
-        const eur_try = 1 / (eur_data.rates.TRY || 1);
-        return { usd_try, eur_try, date: todayStr };
+        const usd = await (await fetch('https://api.exchangerate-api.com/v4/latest/USD')).json();
+        const eur = await (await fetch('https://api.exchangerate-api.com/v4/latest/EUR')).json();
+        return {
+          usd_try: 1 / (usd.rates.TRY || 1),
+          eur_try: 1 / (eur.rates.TRY || 1),
+          date: todayStr
+        };
       } catch (e) { return null; }
     }
 
-    function nearestMonth(dateStr, series) {
+    function nearestRow(dateStr, series) {
       const target = new Date(dateStr);
       let best = null, bestDiff = Infinity;
       for (const row of series) {
@@ -225,8 +239,8 @@
       return best;
     }
 
-    function valueAt(series, field, dateStr) {
-      const row = nearestMonth(dateStr, series);
+    function valAt(series, field, dateStr) {
+      const row = nearestRow(dateStr, series);
       return row ? parseFloat(row[field]) : null;
     }
 
@@ -234,6 +248,7 @@
     function yearsBetween(d0, d1) { return (new Date(d1) - new Date(d0)) / (365.25 * 24 * 3600 * 1000); }
     function cagr(total, years) { return total > -1 && years > 0 ? Math.pow(1 + total, 1 / years) - 1 : null; }
     function fmtMoney(n) { return new Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY', maximumFractionDigits: 0 }).format(n || 0); }
+    function fmtNum(n, digits=2) { return (n === null || isNaN(n)) ? '—' : n.toLocaleString('tr-TR', {minimumFractionDigits:digits, maximumFractionDigits:digits}); }
     function fmtPct(n) { return (n === null || isNaN(n)) ? '—' : (n * 100).toFixed(2) + '%'; }
 
     document.getElementById('calc-form').addEventListener('submit', async (e) => {
@@ -247,62 +262,66 @@
         const buy = document.getElementById('buy_date').value;
         const sell = document.getElementById('sell_date').value;
         if (sell <= buy) throw new Error('Satış tarihi alım tarihinden sonra olmalı.');
-        const A = parseFloat(document.getElementById('buy_price').value);
-        const S = parseFloat(document.getElementById('sell_price').value);
+        const buyPrice = parseFloat(document.getElementById('buy_price').value);
+        const sellPrice = parseFloat(document.getElementById('sell_price').value);
         const sqm = parseFloat(document.getElementById('sqm').value) || null;
         const tapu = parseFloat(document.getElementById('tapu_pct').value) / 100;
         const komisyon = parseFloat(document.getElementById('komisyon_pct').value) / 100;
         const rentalMonthly = parseFloat(document.getElementById('rental_monthly').value) || 0;
         const rentalCost = parseFloat(document.getElementById('rental_cost_pct').value) / 100;
 
-        const totalBuy = A * (1 + tapu + komisyon);
-        const netSell = S * (1 - tapu - komisyon);
+        const totalCost = buyPrice * (1 + tapu + komisyon);
+        const netProceeds = sellPrice * (1 - tapu - komisyon);
         const months = Math.max(1, Math.round((new Date(sell) - new Date(buy)) / (30 * 24 * 3600 * 1000)));
         const rentalIncome = rentalMonthly * (1 - rentalCost) * months;
-        const totalInflow = netSell + rentalIncome;
+        const totalInflow = netProceeds + rentalIncome;
 
-        const [fx, gold, bist, cpi, kfe] = await Promise.all([
-          loadJson('fx.json'), loadJson('gold.json'), loadJson('bist.json'), loadJson('cpi.json'), loadJson('kfe.json')
-        ]);
-
-        let liveFx = null;
-        if (new Date(sell) > new Date(fx[fx.length-1].date)) liveFx = await fetchLiveFx();
-
-        const cpi0 = valueAt(cpi, 'cpi_index', buy);
-        const cpi1 = liveFx ? null : valueAt(cpi, 'cpi_index', sell);
-        const fxBuy = valueAt(fx, 'usd_try', buy);
-        const fxSell = liveFx ? liveFx.usd_try : valueAt(fx, 'usd_try', sell);
-        const eurBuy = valueAt(fx, 'eur_try', buy);
-        const eurSell = liveFx ? liveFx.eur_try : valueAt(fx, 'eur_try', sell);
-
-        const nominalReturn = (totalInflow - totalBuy) / totalBuy;
-        const realCpi1 = cpi1 || cpi0;
-        const realReturn = (totalInflow - totalBuy * (realCpi1 / cpi0)) / (totalBuy * (realCpi1 / cpi0));
-        const yrs = yearsBetween(buy, sell);
-        const nominalCagr = cagr(nominalReturn, yrs);
-        const realCagr = cagr(realReturn, yrs);
-
-        const usdBaseReturn = ((netSell / fxSell) - (totalBuy / fxBuy)) / (totalBuy / fxBuy);
-        const eurBaseReturn = ((netSell / eurSell) - (totalBuy / eurBuy)) / (totalBuy / eurBuy);
-
-        const alternatives = {};
-        for (const [key, meta] of Object.entries(assetsMeta)) {
-          const data = await loadJson(meta.file);
-          let v0 = valueAt(data, meta.field, buy);
-          let v1 = valueAt(data, meta.field, sell);
-          if (!v0 || !v1) continue;
-          const g = growth(v0, v1) - 1;
-          alternatives[key] = { name: meta.name, return: g, final: totalBuy * (1 + g), unit: meta.unit };
+        const datasets = {};
+        for (const a of ASSETS) {
+          if (a.file) datasets[a.file] = await loadJson(a.file);
         }
 
-        let bestAlt = null, bestVal = -Infinity;
-        for (const [k, v] of Object.entries(alternatives)) {
-          if (v.final > bestVal) { bestVal = v.final; bestAlt = v; }
-        }
-        const opportunityCost = bestAlt ? bestVal - totalInflow : null;
-        const breakEven = totalBuy / (1 - tapu - komisyon);
+        const liveFx = new Date(sell) > new Date(datasets['fx.json'][datasets['fx.json'].length-1].date) ? await fetchLiveFx() : null;
 
-        render({ totalBuy, netSell, rentalIncome, totalInflow, nominalReturn, realReturn, nominalCagr, realCagr, usdBaseReturn, eurBaseReturn, alternatives, bestAlt, opportunityCost, breakEven, sqm, months });
+        const results = [];
+        for (const asset of ASSETS) {
+          let buyRate, sellRate;
+          if (asset.isBase) {
+            buyRate = 1; sellRate = 1;
+          } else if (asset.key === 'TUFE') {
+            buyRate = valAt(datasets[asset.file], asset.field, buy);
+            sellRate = valAt(datasets[asset.file], asset.field, sell);
+          } else {
+            buyRate = liveFx && asset.key === 'USD' ? liveFx.usd_try : valAt(datasets[asset.file], asset.field, buy);
+            sellRate = liveFx && asset.key === 'USD' ? liveFx.usd_try : (liveFx && asset.key === 'EUR' ? liveFx.eur_try : valAt(datasets[asset.file], asset.field, sell));
+          }
+          if (!buyRate || !sellRate) continue;
+
+          let buyValue, sellValue;
+          if (asset.key === 'TUFE') {
+            buyValue = totalCost;
+            sellValue = totalInflow * (buyRate / sellRate);
+          } else {
+            buyValue = totalCost / buyRate;
+            sellValue = totalInflow / sellRate;
+          }
+          const profit = sellValue - buyValue;
+          const returnPct = profit / buyValue;
+          const years = yearsBetween(buy, sell);
+          const cagrVal = cagr(returnPct, years);
+
+          // Eger bu varlikta kalsaydiniz, satis tarihinde ne kadar TL'niz olurdu?
+          const hypotheticalTL = asset.key === 'TUFE' ? sellValue : buyValue * sellRate;
+          const profitTL = hypotheticalTL - totalCost;
+
+          results.push({ ...asset, buyRate, sellRate, buyValue, sellValue, profit, returnPct, cagr: cagrVal, profitTL, hypotheticalTL, years });
+        }
+
+        const tlResult = results.find(r => r.key === 'TL');
+        const best = results.filter(r => !r.isBase).slice().sort((a, b) => b.profitTL - a.profitTL)[0];
+        const opportunityCost = best ? best.profitTL - tlResult.profitTL : null;
+
+        render({ totalCost, netProceeds, rentalIncome, months, sqm, results, best, opportunityCost, buyPrice, sellPrice });
       } catch (err) {
         document.getElementById('error').textContent = err.message;
         document.getElementById('error').classList.remove('hidden');
@@ -313,39 +332,71 @@
     });
 
     function render(d) {
-      const grid = document.getElementById('kpi-grid');
-      const profit = d.totalInflow - d.totalBuy;
-      const profitClass = profit >= 0 ? 'positive' : 'negative';
-      grid.innerHTML = `
-        <div class="kpi"><span class="kpi-label">Net Kâr / Zarar</span><strong class="kpi-value ${profitClass}">${fmtMoney(profit)}</strong><span class="kpi-sub">${fmtPct(d.nominalReturn)} nominal</span></div>
-        <div class="kpi"><span class="kpi-label">Nominal CAGR</span><strong class="kpi-value ${d.nominalCagr >= 0 ? 'positive' : 'negative'}">${fmtPct(d.nominalCagr)}</strong></div>
-        <div class="kpi"><span class="kpi-label">Reel CAGR</span><strong class="kpi-value ${d.realCagr >= 0 ? 'positive' : 'negative'}">${fmtPct(d.realCagr)}</strong></div>
-        <div class="kpi"><span class="kpi-label">Fırsat Maliyeti</span><strong class="kpi-value ${d.opportunityCost > 0 ? 'negative' : 'positive'}">${fmtMoney(d.opportunityCost || 0)}</strong><span class="kpi-sub">${d.bestAlt ? 'En iyi: ' + d.bestAlt.name : ''}</span></div>
+      const tl = d.results.find(r => r.key === 'TL');
+      const profitClass = tl.profit >= 0 ? 'positive' : 'negative';
+
+      document.getElementById('kpi-grid').innerHTML = `
+        <div class="kpi"><span class="kpi-label">Net Kâr / Zarar</span><strong class="kpi-value ${profitClass}">${fmtMoney(tl.profit)}</strong><span class="kpi-sub">${fmtPct(tl.returnPct)}</span></div>
+        <div class="kpi"><span class="kpi-label">Yıllık Getiri (CAGR)</span><strong class="kpi-value ${tl.cagr >= 0 ? 'positive' : 'negative'}">${fmtPct(tl.cagr)}</strong></div>
+        <div class="kpi"><span class="kpi-label">En İyi Alternatif</span><strong class="kpi-value" style="color:var(--primary)">${d.best.name}</strong><span class="kpi-sub">${fmtMoney(d.best.profitTL)} TL karşılığı</span></div>
+        <div class="kpi"><span class="kpi-label">Fırsat Maliyeti</span><strong class="kpi-value ${d.opportunityCost > 0 ? 'negative' : 'positive'}">${fmtMoney(d.opportunityCost || 0)}</strong><span class="kpi-sub">TL bazında</span></div>
       `;
 
+      document.getElementById('asset-cards').innerHTML = d.results.filter(r => !r.isBase).map(r => {
+        const cls = r.profit >= 0 ? 'pos' : 'neg';
+        const badge = r.profit >= 0 ? 'badge-pos' : 'badge-neg';
+        const sign = r.profit >= 0 ? '+' : '';
+        return `
+          <div class="rcard ${cls}">
+            <h3>${r.name}</h3>
+            <div class="big ${r.profit >= 0 ? 'positive' : 'negative'}">${sign}${fmtNum(r.profit)} ${r.unit}</div>
+            <div class="detail">
+              Alış: ${fmtNum(r.buyValue)} ${r.unit}<br>
+              Satış: ${fmtNum(r.sellValue)} ${r.unit}<br>
+              Yıllık: ${fmtPct(r.cagr)}<br>
+              <span style="color:var(--muted)">Eğer bu varlıkta kalsaydınız: ${fmtMoney(r.hypotheticalTL)} TL</span>
+            </div>
+            <span class="badge ${badge}">${sign}${fmtPct(r.returnPct)}</span>
+          </div>
+        `;
+      }).join('');
+
       document.getElementById('summary-list').innerHTML = `
-        <li><span>Toplam maliyet</span><strong>${fmtMoney(d.totalBuy)}</strong></li>
-        <li><span>Net satış geliri</span><strong>${fmtMoney(d.netSell)}</strong></li>
+        <li><span>Toplam maliyet</span><strong>${fmtMoney(d.totalCost)}</strong></li>
+        <li><span>Net satış geliri</span><strong>${fmtMoney(d.netProceeds)}</strong></li>
         <li><span>Kira geliri</span><strong>${fmtMoney(d.rentalIncome)}</strong></li>
-        <li><span>Elde tutma süresi</span><strong>${d.months} ay</strong></li>
-        <li><span>USD bazlı getiri</span><strong>${fmtPct(d.usdBaseReturn)}</strong></li>
-        <li><span>EUR bazlı getiri</span><strong>${fmtPct(d.eurBaseReturn)}</strong></li>
+        <li><span>Elde tutma süresi</span><strong>${d.months} ay / ${(d.months/12).toFixed(1)} yıl</strong></li>
+        <li><span>Enflasyon bazlı reel getiri</span><strong>${fmtPct(d.results.find(r=>r.key==='TUFE').returnPct)}</strong></li>
         ${d.sqm ? `
-          <li><span>Alış m² fiyatı</span><strong>${fmtMoney(d.totalBuy / d.sqm)}</strong></li>
-          <li><span>Satış m² fiyatı</span><strong>${fmtMoney(d.netSell / d.sqm)}</strong></li>
+          <li><span>Alış m² fiyatı</span><strong>${fmtMoney(d.totalCost/d.sqm)}</strong></li>
+          <li><span>Satış m² fiyatı</span><strong>${fmtMoney(d.netProceeds/d.sqm)}</strong></li>
+          <li><span>m² başına kâr</span><strong>${fmtMoney(tl.profit/d.sqm)}</strong></li>
         ` : ''}
       `;
 
-      const tbody = document.querySelector('#alt-table tbody');
-      const rows = [['Gayrimenkul', d.nominalReturn, d.totalInflow], ...Object.entries(d.alternatives).map(([k, v]) => [v.name, v.return, v.final])];
-      tbody.innerHTML = rows.map(([name, ret, val]) => `
-        <tr><td>${name}</td><td class="${ret >= 0 ? 'positive' : 'negative'}">${fmtPct(ret)}</td><td>${fmtMoney(val)}</td></tr>
-      `).join('');
+      document.getElementById('breakeven-list').innerHTML = d.results.filter(r => !r.isBase).map(r => {
+        const bePrice = d.buyPrice * growth(r.buyRate, r.sellRate);
+        const status = d.sellPrice >= bePrice ? 'Üzerinde' : 'Altında';
+        const color = d.sellPrice >= bePrice ? 'positive' : 'negative';
+        return `<li><span>${r.name}</span><strong class="${color}">${fmtMoney(bePrice)} <small>(${status})</small></strong></li>`;
+      }).join('');
 
-      document.getElementById('break-even').textContent = fmtMoney(d.breakEven);
-      document.getElementById('break-even').className = d.netSell >= d.breakEven ? 'positive' : 'negative';
+      const tbody = document.querySelector('#detail-table tbody');
+      tbody.innerHTML = d.results.map(r => {
+        const cls = r.profit >= 0 ? 'positive' : 'negative';
+        const sign = r.profit >= 0 ? '+' : '';
+        return `<tr>
+          <td>${r.name}</td>
+          <td>${fmtNum(r.buyValue)} ${r.unit}</td>
+          <td>${fmtNum(r.sellValue)} ${r.unit}</td>
+          <td class="${cls}">${sign}${fmtNum(r.profit)} ${r.unit}</td>
+          <td class="${cls}">${sign}${fmtPct(r.returnPct)}</td>
+          <td>${fmtPct(r.cagr)}</td>
+        </tr>`;
+      }).join('');
+
       document.getElementById('results').classList.remove('hidden');
-      window.scrollTo({ top: document.getElementById('results').offsetTop - 20, behavior: 'smooth' });
+      document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   </script>
 </body>
