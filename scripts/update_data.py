@@ -120,34 +120,14 @@ def update_gold():
 
 
 def update_bist():
+    # NOT: BIST GYO endeksi (XGMYO) ücretsiz Yahoo kaynağında bulunmadığı için GYO serisi
+    # kaldırıldı. Yalnızca BIST 100 güncellenir. Doğru XGMYO verisi sağlanırsa buraya eklenir.
     existing = load_json("bist.json")
-    # GYO: tekil şirket değil, BIST Gayrimenkul Yat. Ort. ENDEKSİ (XGMYO)
-    bist, gyo = fetch_yf("XU100.IS"), fetch_yf("XGMYO.IS")
-    merged = {r["date"]: r for r in existing}
+    bist = fetch_yf("XU100.IS")
+    merged = {r["date"]: {"date": r["date"], "bist100": r.get("bist100")} for r in existing if r.get("bist100")}
     if bist is not None:
         for _, row in bist.iterrows():
-            merged.setdefault(row["date"], {"date": row["date"]})["bist100"] = float(row["Close XU100.IS"])
-    # GYO endeksi (XGMYO): yalnızca gerçekten veri geldiyse gyox'u değiştir; aksi halde
-    # mevcut değerleri KORU (kolonu asla boşaltma).
-    if gyo is not None:
-        import pandas as pd
-        close_col = next((c for c in gyo.columns if c.startswith("Close")), None)
-        new_gyo = {}
-        if close_col:
-            for _, row in gyo.iterrows():
-                val = row[close_col]
-                if pd.notna(val):
-                    new_gyo[row["date"]] = float(val)
-        if new_gyo:
-            for v in merged.values():
-                v.pop("gyox", None)
-            for d, val in new_gyo.items():
-                merged.setdefault(d, {"date": d})["gyox"] = val
-            print("GYO (XGMYO) records:", len(new_gyo))
-        else:
-            print("XGMYO: kullanılabilir veri yok; mevcut gyox korunuyor.")
-    else:
-        print("XGMYO endeksi alınamadı; mevcut gyox korunuyor.")
+            merged[row["date"]] = {"date": row["date"], "bist100": float(row["Close XU100.IS"])}
     rows = [v for v in merged.values() if v.get("bist100")]
     save_json("bist.json", sorted(rows, key=lambda x: x["date"]))
     print("BIST records:", len(rows))
@@ -213,7 +193,11 @@ def update_kfe():
 
 if __name__ == "__main__":
     os.makedirs(DATA_DIR, exist_ok=True)
-    for fn in (update_fx, update_gold, update_bist, update_cpi, update_kfe):
+    # NOT: cpi.json (TÜFE) ve kfe.json, TÜİK'in resmî değerleriyle elle küratörlüğü yapılan
+    # doğrulanmış serilerdir. EVDS otomatik güncellemesi güvenilir çalışmadığından (boş yanıt)
+    # ve yanlış tabanlı veri bu doğrulanmış serileri bozabileceğinden, update_cpi/update_kfe
+    # otomatik akıştan çıkarıldı. Yeni TÜFE ayları eklenirken cpi.json elle güncellenmelidir.
+    for fn in (update_fx, update_gold, update_bist):
         try:
             fn()
         except Exception as e:
