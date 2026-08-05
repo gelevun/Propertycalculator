@@ -63,6 +63,8 @@
     .kpi-label{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;}
     .kpi-value{display:block;font-size:1.5rem;font-weight:800;margin-top:6px;}
     .kpi-sub{font-size:.74rem;color:var(--muted);margin-top:4px;}
+    .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    @media(max-width:560px){.trio{grid-template-columns:1fr;}}
 
     .chart-wrap{position:relative;height:340px;}
     .chart-toggle{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
@@ -166,6 +168,11 @@
     <div id="q_results" class="hidden">
       <div id="q_verdict" class="verdict"></div>
       <div class="kpi-grid" id="q_kpi"></div>
+
+      <div class="card">
+        <h2 class="section-title">Yıllıklandırılmış getiri <small>— yıl başına ortalama (CAGR)</small></h2>
+        <div class="trio" id="q_kpi_annual"></div>
+      </div>
 
       <div class="card">
         <h2 class="section-title">Zaman içinde değer <small>— aynı parayı her enstrümana koysaydınız</small></h2>
@@ -342,13 +349,18 @@ function analyze(pos,datasets,live){
   const cpi=benches.find(x=>x.key==='TUFE'), usd=benches.find(x=>x.key==='USD');
   const sorted=benches.filter(b=>b.kind==='price').slice().sort((a,b)=>b.altValueTL-a.altValueTL);
   const best=sorted[0]||null;
+  const realReturn=cpi?cpi.returnInAsset:null;
+  const usdReturn=usd?usd.returnInAsset:null;
+  const annualize=r=>(r!=null&&years>0)?Math.pow(1+r,1/years)-1:null;
   return {
     buy,sell,months,years,buyPrice,sellPrice,
     C0,V1,buyCosts,sellCosts,netProceeds,rentalIncome,
     profitTL,returnTL,cagrTL,
-    realReturn: cpi?cpi.returnInAsset:null,
+    realReturn,
     realProfitBuyTL: cpi?V1*(cpi.pBuy/cpi.pSell)-C0:null,
-    usdReturn: usd?usd.returnInAsset:null,
+    usdReturn,
+    cagrReal: annualize(realReturn),   // yıllık reel (TÜFE) getiri
+    cagrUsd: annualize(usdReturn),     // yıllık USD getirisi
     benches, best, opportunityCost: best?best.altValueTL-V1:null,
     sqm:+pos.sqm||null, pos,
   };
@@ -488,10 +500,15 @@ function renderQuick(a){
   document.getElementById('q_verdict').innerHTML=verdictHtml(a);
   const k=document.getElementById('q_kpi');
   k.innerHTML=`
-    <div class="kpi ${a.profitTL>=0?'k-pos':'k-neg'}"><span class="kpi-label">Nominal K/Z</span><strong class="kpi-value ${cls(a.profitTL)}">${money(a.profitTL)}</strong><span class="kpi-sub">${pct(a.returnTL)} · CAGR ${pct(a.cagrTL)}</span></div>
+    <div class="kpi ${a.profitTL>=0?'k-pos':'k-neg'}"><span class="kpi-label">Nominal K/Z</span><strong class="kpi-value ${cls(a.profitTL)}">${money(a.profitTL)}</strong><span class="kpi-sub">${pct(a.returnTL)} toplam</span></div>
     <div class="kpi ${a.realReturn>=0?'k-pos':'k-neg'}"><span class="kpi-label">Reel getiri (TÜFE)</span><strong class="kpi-value ${cls(a.realReturn)}">${pct(a.realReturn)}</strong><span class="kpi-sub">${money(a.realProfitBuyTL)} (alış günü ₺)</span></div>
     <div class="kpi ${a.usdReturn>=0?'k-pos':'k-neg'}"><span class="kpi-label">USD bazında</span><strong class="kpi-value ${cls(a.usdReturn)}">${pct(a.usdReturn)}</strong><span class="kpi-sub">dolara karşı</span></div>
     <div class="kpi ${a.opportunityCost>0?'k-neg':'k-pos'}"><span class="kpi-label">Fırsat maliyeti</span><strong class="kpi-value" style="color:${a.opportunityCost>0?'var(--danger)':'var(--primary)'}">${money(Math.abs(a.opportunityCost||0))}</strong><span class="kpi-sub">en iyi: ${a.best?a.best.name:'—'}</span></div>`;
+
+  document.getElementById('q_kpi_annual').innerHTML=`
+    <div class="kpi ${a.cagrTL>=0?'k-pos':'k-neg'}"><span class="kpi-label">Yıllık nominal (CAGR)</span><strong class="kpi-value ${cls(a.cagrTL)}">${pct(a.cagrTL)}</strong><span class="kpi-sub">yıl başına</span></div>
+    <div class="kpi ${a.cagrReal>=0?'k-pos':'k-neg'}"><span class="kpi-label">Yıllık reel (TÜFE)</span><strong class="kpi-value ${cls(a.cagrReal)}">${pct(a.cagrReal)}</strong><span class="kpi-sub">alım gücü / yıl</span></div>
+    <div class="kpi ${a.cagrUsd>=0?'k-pos':'k-neg'}"><span class="kpi-label">Yıllık USD getirisi</span><strong class="kpi-value ${cls(a.cagrUsd)}">${pct(a.cagrUsd)}</strong><span class="kpi-sub">dolar bazında / yıl</span></div>`;
 
   document.getElementById('q_cards').innerHTML=a.benches.map(b=>{
     const good=b.returnInAsset>=0;
