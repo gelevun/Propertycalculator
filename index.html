@@ -275,8 +275,7 @@
   </section>
 
   <footer>
-    <p>Veriler tarihsel kaynaklardan (TCMB, TÜİK, Borsa İstanbul, TÜİK KFE) derlenir; USD/EUR güncel tarihler için canlı kurdan çekilir. Yatırım tavsiyesi değildir.</p>
-    <p><a href="https://github.com/gelevun/Propertycalculator" target="_blank" rel="noopener">Kaynak kodu (GitHub)</a></p>
+    <p>Veriler resmî kaynaklardan (TCMB kur, Borsa İstanbul, TÜİK TÜFE ve İnşaat Maliyet Endeksi) derlenir; USD/EUR güncel tarihler için anlık kurdan çekilir. Yatırım tavsiyesi değildir.</p>
   </footer>
 </div>
 
@@ -288,7 +287,7 @@ const BENCHMARKS = [
   {key:'EUR',name:'Euro',file:'fx.json',field:'eur_try',unit:'€',color:'#818cf8',kind:'price'},
   {key:'GOLD',name:'Gram Altın',file:'gold.json',field:'price_try',unit:'gr',color:'#fbbf24',kind:'price'},
   {key:'BIST100',name:'BIST 100',file:'bist.json',field:'bist100',unit:'puan',color:'#f472b6',kind:'price'},
-  {key:'KFE',name:'Konut Fiyat Endeksi',file:'kfe.json',field:'index',unit:'endeks',color:'#2dd4bf',kind:'price'},
+  {key:'IME',name:'İnşaat Maliyet Endeksi',file:'ime.json',field:'index',unit:'endeks',color:'#2dd4bf',kind:'ref'},
   {key:'TUFE',name:'Enflasyon (TÜFE)',file:'cpi.json',field:'cpi_index',unit:'sepet',color:'#94a3b8',kind:'cpi'},
 ];
 const toDate = s => new Date(s + (s && s.length===10 ? 'T00:00:00Z' : ''));
