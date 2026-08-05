@@ -1,27 +1,42 @@
-# Property Calculator
+# Reel Getiri — Gayrimenkul & Portföy Analizi
 
-GitHub Pages üzerinde çalışan, tamamen statik gayrimenkul reel getiri analiz aracı.
+GitHub Pages üzerinde çalışan, tamamen statik bir **reel getiri** analiz aracı. Bir gayrimenkulün (veya başka bir yatırımın) giriş–çıkış kâr/zararını; dolar, euro, gram altın, BIST 100, GYO, Konut Fiyat Endeksi (KFE) ve enflasyona (TÜFE) karşı kıyaslar. Yüksek enflasyonlu bir ortamda "nominal kazandım ama alım gücüm ne oldu?" sorusunu net biçimde yanıtlar.
 
-## Özellikler
+## İki mod
 
-- Mobil uyumlu, modern ve sade arayüz
-- Nominal ve reel (TÜFE) getiri, CAGR, USD/EUR bazlı getiri
-- Alternatif yatırım karşılaştırması (altın, BIST100, GYO, KFE)
-- Fırsat maliyeti ve başa baş satış fiyatı
-- Tapu, komisyon, kira geliri ve m² desteği
-- Dark / light tema
-- PWA desteği
+- **Hızlı Analiz** — Tek bir yatırımın alış/satış bilgilerini girip anında karşılaştırma, grafik ve "sonuç cümlesi" alırsınız.
+- **Portföyüm** — Birden fazla pozisyonu (gayrimenkuller + diğerleri) tarayıcıda kaydedip (localStorage) toplam kâr/zarar, reel getiri ve portföyü tek tek alternatiflerle karşılaştırma. JSON olarak dışa/içe aktarılabilir.
 
-## Canlı Veri
+## Nasıl hesaplıyor
 
-- `data/*.json` dosyalarındaki tarihsel verileri kullanır.
-- USD ve EUR için satış tarihi güncelse anlık kur API’sinden veri çeker.
-- Veriler her gün UTC 06:00’da GitHub Actions ile güncellenmeye çalışılır.
+- **Yatırılan sermaye (C0)** = alış fiyatı + alış tarafı masraflar (tapu + komisyon).
+- **Gerçekleşen değer (V1)** = net satış geliri (satış − komisyon) + net kira geliri. Açık pozisyonda (hâlâ elinizdeyse) satış komisyonu uygulanmaz, bugünkü tahmini değeri girersiniz.
+- **Nominal getiri** = V1 / C0 − 1, **CAGR** yıllıklandırılmış.
+- **Reel getiri (TÜFE)** = V1 alış günü liralarına indirgenip C0 ile kıyaslanır → gerçek alım gücü değişimi.
+- **Her enstrüman için**: "Aynı parayı buraya koysaydınız" değeri, mülkün o enstrümanı yenip yenmediği (o enstrüman cinsinden getirisi), başabaş satış fiyatı ve fırsat maliyeti.
 
-## GitHub Pages Ayarları
+Grafikte, aynı sermayenin her enstrümandaki zaman içi değeri gösterilir; **Nominal (₺)** ve **Reel (alış günü ₺'siyle)** görünümleri arasında geçiş yapılabilir. Reel görünümde yatay çizgi = enflasyonu tam karşılamak demektir.
 
-Repo ayarlarından **Pages > Build and deployment > Source** olarak **GitHub Actions** seçilmelidir.
+## Canlı & tarihsel veri
+
+- `data/*.json` içindeki aylık tarihsel serileri kullanır.
+- USD/EUR için satış tarihi veri bitişinden yeniyse anlık kur API'sinden çekilir.
+- TÜFE gibi bir seri son veri tarihinden eskiyse, sonrası son 12 ayın trendiyle **tahmin edilir** ve arayüzde "tahmini" rozetiyle işaretlenir. Ayrıca üstte bir **veri güncelliği** uyarısı çıkar.
+
+## Veriyi güncelleme
+
+`scripts/update_data.py` her gün UTC 06:00'da GitHub Actions ile çalışır:
+
+- **FX** (USD/EUR) → TCMB günlük kur XML'i (anahtar gerekmez).
+- **Altın & BIST/GYO** → yfinance.
+- **TÜFE & KFE** → TCMB EVDS (anahtar gerekir). Repo ayarlarından **Settings → Secrets and variables → Actions** altına `EVDS_API_KEY` ekleyin (ücretsiz: https://evds2.tcmb.gov.tr). Anahtar yoksa mevcut TÜFE/KFE verisi korunur.
+
+## GitHub Pages
+
+Repo **Settings → Pages → Build and deployment → Source** olarak **GitHub Actions** (veya `main` / root) seçilmelidir.
 
 ## Kullanım
 
-Sayfayı açın, alış/satış bilgilerini girin ve “Analiz Et” butonuna basın.
+Sayfayı açın, alış/satış bilgilerini girin, "Analiz et"e basın. Portföy için "Portföyüm" sekmesinden pozisyon ekleyin.
+
+> Yatırım tavsiyesi değildir. Tarihsel veriler ve tahminler yanıltıcı olabilir.
