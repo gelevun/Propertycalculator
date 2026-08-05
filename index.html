@@ -78,6 +78,7 @@
     .rcard h3{font-size:.82rem;color:var(--muted);margin:0 0 6px;text-transform:uppercase;letter-spacing:.4px;display:flex;justify-content:space-between;align-items:center;}
     .rcard .big{font-size:1.35rem;font-weight:800;margin-bottom:8px;}
     .rcard .detail{font-size:.82rem;color:var(--muted);line-height:1.55;}
+    .rateinfo{font-size:.76rem;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:6px 9px;margin-bottom:9px;}
     .badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:800;}
     .badge-pos{background:rgba(52,211,153,.16);color:var(--primary);} .badge-neg{background:var(--danger-bg);color:var(--danger);}
     .badge-est{background:var(--warning-bg);color:var(--warning);font-size:.62rem;padding:2px 7px;}
@@ -153,8 +154,8 @@
           <label>Alış fiyatı (₺) <input type="text" inputmode="numeric" id="q_buy_price" placeholder="ör. 1.500.000" required></label>
           <label><span id="q_sell_label">Satış fiyatı (₺)</span> <input type="text" inputmode="numeric" id="q_sell_price" placeholder="ör. 6.000.000" required></label>
           <label>m² (opsiyonel) <input type="number" id="q_sqm" min="1" step="1"></label>
-          <label>Tapu harcı (%) <input type="number" id="q_tapu" min="0" max="10" step="0.1" value="4"></label>
-          <label>Komisyon (%) <input type="number" id="q_kom" min="0" max="10" step="0.1" value="2"></label>
+          <label>Tapu harcı (%) <input type="number" id="q_tapu" min="0" max="10" step="0.1" value="0"></label>
+          <label>Komisyon (%) <input type="number" id="q_kom" min="0" max="10" step="0.1" value="0"></label>
           <label>Aylık kira (₺) <input type="number" id="q_rent" min="0" step="100" value="0"></label>
           <label>Boşluk + bakım (%) <input type="number" id="q_rent_cost" min="0" max="50" step="1" value="0"><span class="hint">Kira gelirinden düşülür</span></label>
           <div class="full"><button type="submit" class="btn" id="q_submit">Analiz et</button></div>
@@ -204,13 +205,13 @@
         <div class="table-wrap">
           <table id="q_table">
             <thead><tr>
-              <th>Enstrüman</th><th>Kendi getirisi</th><th>Paranız orada olsaydı</th>
+              <th>Enstrüman</th><th>Alış değeri</th><th>Satış değeri</th><th>Kendi getirisi</th><th>Paranız orada olsaydı</th>
               <th>Mülk farkı (₺)</th><th>Mülkün getirisi</th>
             </tr></thead>
             <tbody></tbody>
           </table>
         </div>
-        <p class="hint" style="margin-top:12px">“Mülkün getirisi” pozitifse gayrimenkul o enstrümanı yenmiş demektir (o enstrüman cinsinden alım gücünüz artmış). Negatifse o enstrümanda kalmak daha kârlı olurdu.</p>
+        <p class="hint" style="margin-top:12px">Alış/Satış değeri, hesapta o tarihler için kullanılan gerçek kur/fiyat/endeks değeridir (USD/EUR için ₺ karşılığı, altın için ₺/gram, diğerleri endeks). Doğruluğu kendiniz teyit edebilirsiniz. “*” işaretli değerler, o ayın verisi henüz açıklanmadığı için son bilinen resmî değerdir. “Mülkün getirisi” pozitifse gayrimenkul o enstrümanı yenmiş demektir; negatifse o enstrümanda kalmak daha kârlı olurdu.</p>
       </div>
     </div>
   </section>
@@ -227,8 +228,8 @@
           <label>Alış fiyatı (₺) <input type="text" inputmode="numeric" id="p_buy_price" placeholder="ör. 1.500.000" required></label>
           <label><span id="p_sell_label">Satış fiyatı (₺)</span> <input type="text" inputmode="numeric" id="p_sell_price" placeholder="ör. 6.000.000" required></label>
           <label class="chk"><input type="checkbox" id="p_open"> Hâlâ elimde</label>
-          <label>Tapu harcı (%) <input type="number" id="p_tapu" min="0" max="10" step="0.1" value="4"></label>
-          <label>Komisyon (%) <input type="number" id="p_kom" min="0" max="10" step="0.1" value="2"></label>
+          <label>Tapu harcı (%) <input type="number" id="p_tapu" min="0" max="10" step="0.1" value="0"></label>
+          <label>Komisyon (%) <input type="number" id="p_kom" min="0" max="10" step="0.1" value="0"></label>
           <label>Aylık kira (₺) <input type="number" id="p_rent" min="0" step="100" value="0"></label>
           <div class="full row-actions">
             <button type="submit" class="btn btn-sm" id="p_submit">Portföye ekle</button>
@@ -406,6 +407,18 @@ function attachThousands(id){
     el.value=d?Number(d).toLocaleString('tr-TR'):'';
   });
 }
+// Şeffaflık: hesapta kullanılan alış/satış kur veya fiyatını beyan et
+function fmtRate(n){ return num(n, Math.abs(n)<100?4:2); }
+function rateLine(b){
+  const est=b.estimated?' <span style="opacity:.75">(son bilinen değer)</span>':'';
+  let t;
+  if(b.key==='USD') t=`1 $ = ₺${fmtRate(b.pBuy)} → ₺${fmtRate(b.pSell)}`;
+  else if(b.key==='EUR') t=`1 € = ₺${fmtRate(b.pBuy)} → ₺${fmtRate(b.pSell)}`;
+  else if(b.key==='GOLD') t=`Gram altın ₺${fmtRate(b.pBuy)} → ₺${fmtRate(b.pSell)}`;
+  else if(b.key==='TUFE') t=`TÜFE endeksi ${fmtRate(b.pBuy)} → ${fmtRate(b.pSell)}`;
+  else t=`Endeks ${fmtRate(b.pBuy)} → ${fmtRate(b.pSell)}`;
+  return `Kullanılan değer — ${t}${est}`;
+}
 
 /* ==================== TEMA & SEKME ==================== */
 function toggleTheme(){ const h=document.documentElement; const t=h.getAttribute('data-theme')==='dark'?'light':'dark'; h.setAttribute('data-theme',t); localStorage.setItem('theme',t); if(window._charts)Object.values(_charts).forEach(c=>c&&c.update()); }
@@ -515,6 +528,7 @@ function renderQuick(a){
     return `<div class="rcard ${good?'pos':'neg'}">
       <h3>${b.name}</h3>
       <div class="big ${good?'pos':'neg'}">${pct(b.returnInAsset)}</div>
+      <div class="rateinfo">${rateLine(b)}</div>
       <div class="detail">
         Kendi getirisi: <b>${pct(b.benchReturn)}</b><br>
         Paranız orada olsaydı: <b>${money(b.altValueTL)}</b><br>
@@ -543,6 +557,8 @@ function renderQuick(a){
   document.querySelector('#q_table tbody').innerHTML=a.benches.map(b=>`
     <tr>
       <td>${b.name}</td>
+      <td>${fmtRate(b.pBuy)}${b.estimated?' *':''}</td>
+      <td>${fmtRate(b.pSell)}${b.estimated?' *':''}</td>
       <td>${pct(b.benchReturn)}</td>
       <td>${money(b.altValueTL)}</td>
       <td class="${cls(b.vsAssetTL)}">${money(b.vsAssetTL)}</td>
@@ -634,7 +650,7 @@ document.getElementById('pf-form').addEventListener('submit',e=>{
   }catch(ex){ err.textContent=ex.message; err.classList.remove('hidden'); return; }
   const arr=loadPF(); arr.push(p); savePF(arr);
   document.getElementById('pf-form').reset();
-  document.getElementById('p_tapu').value=4; document.getElementById('p_kom').value=2; document.getElementById('p_rent').value=0;
+  document.getElementById('p_tapu').value=0; document.getElementById('p_kom').value=0; document.getElementById('p_rent').value=0;
   renderPortfolio();
 });
 function deletePosition(id){ savePF(loadPF().filter(p=>p.id!==id)); renderPortfolio(); }
