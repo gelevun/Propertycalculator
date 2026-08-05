@@ -127,12 +127,25 @@ def update_bist():
     if bist is not None:
         for _, row in bist.iterrows():
             merged.setdefault(row["date"], {"date": row["date"]})["bist100"] = float(row["Close XU100.IS"])
+    # GYO endeksi (XGMYO): yalnızca gerçekten veri geldiyse gyox'u değiştir; aksi halde
+    # mevcut değerleri KORU (kolonu asla boşaltma).
     if gyo is not None:
-        # Endeks başarıyla geldiyse eski gyox değerlerini (İş GYO) tamamen değiştir
-        for v in merged.values():
-            v.pop("gyox", None)
-        for _, row in gyo.iterrows():
-            merged.setdefault(row["date"], {"date": row["date"]})["gyox"] = float(row["Close XGMYO.IS"])
+        import pandas as pd
+        close_col = next((c for c in gyo.columns if c.startswith("Close")), None)
+        new_gyo = {}
+        if close_col:
+            for _, row in gyo.iterrows():
+                val = row[close_col]
+                if pd.notna(val):
+                    new_gyo[row["date"]] = float(val)
+        if new_gyo:
+            for v in merged.values():
+                v.pop("gyox", None)
+            for d, val in new_gyo.items():
+                merged.setdefault(d, {"date": d})["gyox"] = val
+            print("GYO (XGMYO) records:", len(new_gyo))
+        else:
+            print("XGMYO: kullanılabilir veri yok; mevcut gyox korunuyor.")
     else:
         print("XGMYO endeksi alınamadı; mevcut gyox korunuyor.")
     rows = [v for v in merged.values() if v.get("bist100")]
@@ -148,10 +161,11 @@ def fetch_evds(series_code):
     url = (
         f"https://evds2.tcmb.gov.tr/service/evds/series={series_code}"
         f"&startDate=01-01-2015&endDate=31-12-{datetime.now().year}"
-        f"&type=json&frequency=5&aggregationTypes=avg"
+        f"&type=json&frequency=5&aggregationTypes=avg&key={EVDS_KEY}"
     )
     try:
-        r = httpx.get(url, headers={"key": EVDS_KEY}, timeout=30)
+        # Anahtarı hem header hem query olarak gönder (yönlendirmede header düşerse yedek)
+        r = httpx.get(url, headers={"key": EVDS_KEY}, timeout=30, follow_redirects=True)
         r.raise_for_status()
         items = r.json().get("items", [])
         out = []
