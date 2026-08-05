@@ -21,7 +21,7 @@ Grafikte, aynı sermayenin her enstrümandaki zaman içi değeri gösterilir; **
 
 - `data/*.json` içindeki aylık tarihsel serileri kullanır.
 - USD/EUR için satış tarihi veri bitişinden yeniyse anlık kur API'sinden çekilir.
-- TÜFE gibi bir seri son veri tarihinden eskiyse, sonrası son 12 ayın trendiyle **tahmin edilir** ve arayüzde "tahmini" rozetiyle işaretlenir. Ayrıca üstte bir **veri güncelliği** uyarısı çıkar.
+- Hiçbir seri için tahmin/projeksiyon yapılmaz. Bir serinin en yeni ayı henüz açıklanmadıysa (ör. içinde bulunulan ayın TÜFE'si) **son bilinen resmî değer** kullanılır. Bir seri belirgin biçimde geride kaldıysa üstte bilgilendirici bir not, hangi tarihe kadar veri olduğunu gösterir.
 
 ## Veriyi güncelleme
 

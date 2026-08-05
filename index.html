@@ -148,8 +148,8 @@
           <label>Alış tarihi <input type="date" id="q_buy_date" required></label>
           <label>Satış / değerleme tarihi <input type="date" id="q_sell_date" required></label>
           <label class="chk full"><input type="checkbox" id="q_open"> Hâlâ elimde (satmadım) — satış fiyatı yerine bugünkü tahmini değeri gireceğim</label>
-          <label>Alış fiyatı (₺) <input type="number" id="q_buy_price" min="0" step="1000" required></label>
-          <label><span id="q_sell_label">Satış fiyatı (₺)</span> <input type="number" id="q_sell_price" min="0" step="1000" required></label>
+          <label>Alış fiyatı (₺) <input type="text" inputmode="numeric" id="q_buy_price" placeholder="ör. 1.500.000" required></label>
+          <label><span id="q_sell_label">Satış fiyatı (₺)</span> <input type="text" inputmode="numeric" id="q_sell_price" placeholder="ör. 6.000.000" required></label>
           <label>m² (opsiyonel) <input type="number" id="q_sqm" min="1" step="1"></label>
           <label>Tapu harcı (%) <input type="number" id="q_tapu" min="0" max="10" step="0.1" value="4"></label>
           <label>Komisyon (%) <input type="number" id="q_kom" min="0" max="10" step="0.1" value="2"></label>
@@ -217,8 +217,8 @@
           <label>İsim / etiket <input type="text" id="p_name" placeholder="Örn: Kadıköy daire" required></label>
           <label>Alış tarihi <input type="date" id="p_buy_date" required></label>
           <label>Satış / değerleme tarihi <input type="date" id="p_sell_date" required></label>
-          <label>Alış fiyatı (₺) <input type="number" id="p_buy_price" min="0" step="1000" required></label>
-          <label><span id="p_sell_label">Satış fiyatı (₺)</span> <input type="number" id="p_sell_price" min="0" step="1000" required></label>
+          <label>Alış fiyatı (₺) <input type="text" inputmode="numeric" id="p_buy_price" placeholder="ör. 1.500.000" required></label>
+          <label><span id="p_sell_label">Satış fiyatı (₺)</span> <input type="text" inputmode="numeric" id="p_sell_price" placeholder="ör. 6.000.000" required></label>
           <label class="chk"><input type="checkbox" id="p_open"> Hâlâ elimde</label>
           <label>Tapu harcı (%) <input type="number" id="p_tapu" min="0" max="10" step="0.1" value="4"></label>
           <label>Komisyon (%) <input type="number" id="p_kom" min="0" max="10" step="0.1" value="2"></label>
@@ -298,17 +298,11 @@ function annualTrailingGrowth(series,field){
   const last=parseFloat(rows[rows.length-1][field]), prev=parseFloat(rows[rows.length-13][field]);
   return prev?last/prev:null;
 }
-function valueAt(series,field,dateStr,opts={}){
-  const ld=lastDate(series), estimated=toDate(dateStr)>toDate(ld);
-  if(estimated&&opts.extrapolateCPI){
-    const annual=annualTrailingGrowth(series,field);
-    if(annual){
-      const rows=series.filter(r=>r[field]!=null);
-      const base=parseFloat(rows[rows.length-1][field]);
-      return {value:base*Math.pow(annual,yearsBetween(ld,dateStr)),estimated:true};
-    }
-  }
-  return {value:nearestValue(series,field,dateStr),estimated};
+// Tahmin/projeksiyon YOK. Tarih veri bitişinden yeniyse (ör. bu ayın TÜFE'si henüz
+// açıklanmamış) son bilinen (en yakın) gerçek değer kullanılır.
+function valueAt(series,field,dateStr){
+  const ld=lastDate(series);
+  return {value:nearestValue(series,field,dateStr), estimated:toDate(dateStr)>toDate(ld)};
 }
 function analyze(pos,datasets,live){
   const buy=pos.buyDate, sell=pos.sellDate;
@@ -391,6 +385,15 @@ const num=(n,d=0)=>(n==null||isNaN(n))?'—':n.toLocaleString('tr-TR',{minimumFr
 const pct=n=>(n==null||isNaN(n))?'—':(n>=0?'+':'')+(n*100).toFixed(1)+'%';
 const cls=n=>n>=0?'pos':'neg';
 const trDate=s=>toDate(s).toLocaleDateString('tr-TR',{year:'numeric',month:'short',day:'numeric'});
+// Binlik ayırıcılı fiyat girişi (1.500.000). parseNum ayırıcıları temizleyip sayıya çevirir.
+function parseNum(v){ return Number(String(v==null?'':v).replace(/\./g,'').replace(/\s/g,'').replace(',','.'))||0; }
+function attachThousands(id){
+  const el=document.getElementById(id); if(!el)return;
+  el.addEventListener('input',()=>{
+    const d=el.value.replace(/\D/g,'');
+    el.value=d?Number(d).toLocaleString('tr-TR'):'';
+  });
+}
 
 /* ==================== TEMA & SEKME ==================== */
 function toggleTheme(){ const h=document.documentElement; const t=h.getAttribute('data-theme')==='dark'?'light':'dark'; h.setAttribute('data-theme',t); localStorage.setItem('theme',t); if(window._charts)Object.values(_charts).forEach(c=>c&&c.update()); }
@@ -404,17 +407,16 @@ function switchTab(t){
 
 /* ==================== FRESHNESS BANNER ==================== */
 function showFreshness(){
-  const parts=[]; let stale=false;
-  const today=new Date();
+  const parts=[]; const today=new Date();
+  const names={'fx.json':'Kur (USD/EUR)','gold.json':'Altın','bist.json':'Borsa/GYO','kfe.json':'Konut Endeksi','cpi.json':'TÜFE'};
   for(const f of [...new Set(BENCHMARKS.map(b=>b.file))]){
     const ld=lastDate(DATASETS[f]);
-    const monthsOld=(today-toDate(ld))/(MS_YEAR/12);
-    const names={'fx.json':'Kur','gold.json':'Altın','bist.json':'Borsa','kfe.json':'Konut end.','cpi.json':'TÜFE'};
-    if(monthsOld>2){ stale=true; parts.push(`${names[f]}: ${ld}`); }
+    const daysOld=(today-toDate(ld))/(24*3600*1000);
+    if(daysOld>45) parts.push(`${names[f]} → ${ld}`);
   }
   const el=document.getElementById('freshness');
-  if(stale){
-    el.innerHTML=`<div class="banner banner-warn"><span>⚠️</span><span><b>Bazı veriler güncel değil.</b> Son veri tarihinden sonrası için: USD/EUR canlı kurdan çekilir; TÜFE son 12 ayın trendiyle tahmin edilir (kartlarda “tahmini” rozetiyle işaretlenir). En güncel olmayan seriler → ${parts.join(' · ')}.</span></div>`;
+  if(parts.length){
+    el.innerHTML=`<div class="banner banner-info"><span>ℹ️</span><span>Şu serilerde en son açıklanan resmî veri bu tarihlere ait; daha yeni tarihler için <b>son bilinen değer</b> kullanılır (tahmin/projeksiyon yapılmaz): ${parts.join(' · ')}. USD/EUR güncel tarihlerde anlık kurdan çekilir.</span></div>`;
   } else el.innerHTML='';
 }
 
@@ -449,6 +451,7 @@ document.getElementById('p_open').addEventListener('change',e=>{
   document.getElementById('q_buy_date').value=yAgo.toISOString().slice(0,10);
   document.getElementById('p_sell_date').value=today;
   document.getElementById('p_buy_date').value=yAgo.toISOString().slice(0,10);
+  ['q_buy_price','q_sell_price','p_buy_price','p_sell_price'].forEach(attachThousands);
 })();
 
 document.getElementById('calc-form').addEventListener('submit',async e=>{
@@ -462,8 +465,8 @@ document.getElementById('calc-form').addEventListener('submit',async e=>{
     const pos={
       buyDate:document.getElementById('q_buy_date').value,
       sellDate:document.getElementById('q_sell_date').value,
-      buyPrice:document.getElementById('q_buy_price').value,
-      sellPrice:document.getElementById('q_sell_price').value,
+      buyPrice:parseNum(document.getElementById('q_buy_price').value),
+      sellPrice:parseNum(document.getElementById('q_sell_price').value),
       sqm:document.getElementById('q_sqm').value,
       tapuPct:document.getElementById('q_tapu').value,
       komisyonPct:document.getElementById('q_kom').value,
@@ -493,7 +496,7 @@ function renderQuick(a){
   document.getElementById('q_cards').innerHTML=a.benches.map(b=>{
     const good=b.returnInAsset>=0;
     return `<div class="rcard ${good?'pos':'neg'}">
-      <h3>${b.name}${b.estimated?'<span class="badge badge-est">tahmini</span>':''}</h3>
+      <h3>${b.name}</h3>
       <div class="big ${good?'pos':'neg'}">${pct(b.returnInAsset)}</div>
       <div class="detail">
         Kendi getirisi: <b>${pct(b.benchReturn)}</b><br>
@@ -522,7 +525,7 @@ function renderQuick(a){
 
   document.querySelector('#q_table tbody').innerHTML=a.benches.map(b=>`
     <tr>
-      <td>${b.name}${b.estimated?' <span class="badge badge-est">tahmini</span>':''}</td>
+      <td>${b.name}</td>
       <td>${pct(b.benchReturn)}</td>
       <td>${money(b.altValueTL)}</td>
       <td class="${cls(b.vsAssetTL)}">${money(b.vsAssetTL)}</td>
@@ -600,8 +603,8 @@ document.getElementById('pf-form').addEventListener('submit',e=>{
     name:document.getElementById('p_name').value.trim()||'Pozisyon',
     buyDate:document.getElementById('p_buy_date').value,
     sellDate:document.getElementById('p_sell_date').value,
-    buyPrice:+document.getElementById('p_buy_price').value,
-    sellPrice:+document.getElementById('p_sell_price').value,
+    buyPrice:parseNum(document.getElementById('p_buy_price').value),
+    sellPrice:parseNum(document.getElementById('p_sell_price').value),
     tapuPct:+document.getElementById('p_tapu').value,
     komisyonPct:+document.getElementById('p_kom').value,
     rentalMonthly:+document.getElementById('p_rent').value,
