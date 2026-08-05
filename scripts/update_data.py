@@ -121,14 +121,20 @@ def update_gold():
 
 def update_bist():
     existing = load_json("bist.json")
-    bist, gyo = fetch_yf("XU100.IS"), fetch_yf("ISGYO.IS")
+    # GYO: tekil şirket değil, BIST Gayrimenkul Yat. Ort. ENDEKSİ (XGMYO)
+    bist, gyo = fetch_yf("XU100.IS"), fetch_yf("XGMYO.IS")
     merged = {r["date"]: r for r in existing}
     if bist is not None:
         for _, row in bist.iterrows():
             merged.setdefault(row["date"], {"date": row["date"]})["bist100"] = float(row["Close XU100.IS"])
     if gyo is not None:
+        # Endeks başarıyla geldiyse eski gyox değerlerini (İş GYO) tamamen değiştir
+        for v in merged.values():
+            v.pop("gyox", None)
         for _, row in gyo.iterrows():
-            merged.setdefault(row["date"], {"date": row["date"]})["gyox"] = float(row["Close ISGYO.IS"])
+            merged.setdefault(row["date"], {"date": row["date"]})["gyox"] = float(row["Close XGMYO.IS"])
+    else:
+        print("XGMYO endeksi alınamadı; mevcut gyox korunuyor.")
     rows = [v for v in merged.values() if v.get("bist100")]
     save_json("bist.json", sorted(rows, key=lambda x: x["date"]))
     print("BIST records:", len(rows))
