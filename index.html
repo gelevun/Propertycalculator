@@ -294,10 +294,20 @@ const toDate = s => new Date(s + (s && s.length===10 ? 'T00:00:00Z' : ''));
 const yearsBetween = (a,b) => (toDate(b)-toDate(a))/MS_YEAR;
 const monthsBetween = (a,b) => Math.max(0, Math.round((toDate(b)-toDate(a))/(MS_YEAR/12)));
 const lastDate = s => s[s.length-1].date;
+// En yakın tarih değil: sorgu tarihinde veya ondan ÖNCEKİ en güncel gerçek kayıt kullanılır.
+// (Aksi halde ör. 20 Şubat sorgusu, mutlak gün farkı daha küçük diye 1 Mart'ın değerini
+// alıp geleceğe bakmış olurdu — bu da "tahmini veri yok" kuralını bozardı.)
 function nearestValue(series,field,dateStr){
-  const t=toDate(dateStr); let best=null,bd=Infinity;
-  for(const r of series){ if(r[field]==null)continue; const d=Math.abs(toDate(r.date)-t); if(d<bd){bd=d;best=r;} }
-  return best?parseFloat(best[field]):null;
+  const t=toDate(dateStr);
+  let best=null,bestT=-Infinity, earliest=null,earliestT=Infinity;
+  for(const r of series){
+    if(r[field]==null) continue;
+    const rt=toDate(r.date);
+    if(rt<=t){ if(rt>bestT){bestT=rt;best=r;} }
+    if(rt<earliestT){earliestT=rt;earliest=r;}
+  }
+  const chosen = best || earliest; // sorgu tarihi tüm veriden eskiyse, en eski gerçek kayıt
+  return chosen?parseFloat(chosen[field]):null;
 }
 function annualTrailingGrowth(series,field){
   const rows=series.filter(r=>r[field]!=null); if(rows.length<13)return null;
